@@ -9,7 +9,15 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"target": "ES6"
+		"target": "ES6",
+		"importsNotUsedAsValues": "error",
+		"isolatedModules": true,
+		"preserveValueImports": true,
+		"lib": ["ES6", "esnext", "DOM", "DOM.Iterable"],
+		"moduleResolution": "node",
+		"module": "ES6",
+		"noEmit": true,
+		"ignoreDeprecations": "5.0"
 	}
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//
