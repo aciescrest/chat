@@ -1,6 +1,5 @@
 [build]
-    base = "acchat/"
-    publish = "build"
+    publish = "build/"
     command = "npm run build && npm prune --production"
 
 [functions]
@@ -12,3 +11,5 @@
         "!node_modules/puppeteer/**/*",
         ]
 
+[context.production]
+    publish = "build/"
