@@ -1,4 +1,5 @@
 [build]
+    base = "acchat/"
     publish = "build"
     command = "npm run build && npm prune --production"
 
