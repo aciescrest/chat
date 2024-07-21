@@ -1,2 +1,3 @@
-[build]
-    functions = "build"
+[functions]
+    directory = "build"
+    node_bundler = "esbuild"
