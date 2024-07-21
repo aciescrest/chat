@@ -14,7 +14,11 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			out: "build",
+			precompress: true,
+			envPrefix: "",
+		}),
 
 		paths: {
 			base: process.env.APP_BASE || "",

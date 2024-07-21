@@ -12,3 +12,5 @@ SECRET_CONFIG
 !.env.ci
 !.env
 gcp-*.json
+# Local Netlify folder
+.netlify
