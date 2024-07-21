@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"checkJs": true,
-		"esModuleInterop": false,
+		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
@@ -16,7 +16,6 @@
 		"lib": ["ES6", "esnext", "DOM", "DOM.Iterable"],
 		"moduleResolution": "node",
 		"module": "ES6",
-		"noEmit": true,
 		"ignoreDeprecations": "5.0"
 	}
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

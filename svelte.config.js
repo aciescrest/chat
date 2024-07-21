@@ -17,7 +17,6 @@ const config = {
 		adapter: adapter({
 			out: "build",
 			precompress: true,
-			envPrefix: "",
 		}),
 
 		paths: {
