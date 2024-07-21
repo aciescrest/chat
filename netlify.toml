@@ -1,14 +1,13 @@
 [build]
     publish = "build"
-    command = "npm run build"
+    command = "npm run build && npm prune --production"
 
 [functions]
     directory = "build"
     node_bundler = "esbuild"
     included_files = [
         "!node_modules/@xenova/transformers/**/*",
-        "!node_modules/@playwright/browser-chromium/**/*",
-        "!node_modules/@playwright/test/**/*",
+        "!node_modules/@playwright/**/*",
         "!node_modules/puppeteer/**/*",
         ]
 
