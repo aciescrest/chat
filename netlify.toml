@@ -1,6 +1,6 @@
 [build]
     publish = "build/"
-    command = "npm run build && npm prune --production"
+    command = "npm run build && npm ci --omit dev && npm prune --production"
 
 [functions]
     directory = "build/"
