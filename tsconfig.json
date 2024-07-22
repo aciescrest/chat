@@ -12,10 +12,10 @@
 		"target": "ES6",
 		"importsNotUsedAsValues": "error",
 		"isolatedModules": true,
-		"preserveValueImports": false,
+		"preserveValueImports": true,
 		"lib": ["ES6", "esnext", "DOM", "DOM.Iterable"],
-		"moduleResolution": "Bundler",
-		"module": "NodeNext",
+		"moduleResolution": "Node10",
+		"module": "ESNext",
 		"ignoreDeprecations": "5.0"
 	}
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

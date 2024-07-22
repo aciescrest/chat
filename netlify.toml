@@ -1,16 +1,4 @@
 [build]
-    publish = "build/"
-    command = "npm run build && npm ci --omit dev && npm prune --production"
+    command = "npm run build"
+    publish = "build"
 
-[functions]
-    directory = "build/"
-    node_bundler = "zisi"
-    included_files = [
-        "!node_modules/@xenova/transformers/**/*",
-        "!node_modules/@playwright/**/*",
-        "!node_modules/puppeteer/**/*",
-        "!node_modules/**/*"
-        ]
-
-[context.production]
-    publish = "build/"

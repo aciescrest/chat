@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-node";
+import adapter from "@sveltejs/adapter-netlify";
 import { vitePreprocess } from "@sveltejs/kit/vite";
 import dotenv from "dotenv";
 
@@ -15,8 +15,8 @@ const config = {
 
 	kit: {
 		adapter: adapter({
-			out: "build",
-			precompress: true,
+			edge: false,
+			split: true,
 		}),
 
 		paths: {
