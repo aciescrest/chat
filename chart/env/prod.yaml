@@ -28,8 +28,8 @@ ingress:
 
 envVars:
   ADDRESS_HEADER: 'X-Forwarded-For'
-  ALTERNATIVE_REDIRECT_URLS: '["huggingchat://login/callback"]'
-  APP_BASE: "/chat"
+  ALTERNATIVE_REDIRECT_URLS: '["aciescrest://login/callback"]'
+  APP_BASE: ""
   ENABLE_ASSISTANTS: "true"
   ENABLE_ASSISTANTS_RAG: "true"
   EXPOSE_API: "true"
@@ -283,7 +283,7 @@ envVars:
   PUBLIC_SHARE_PREFIX: "https://hf.co/chat"
   PUBLIC_ANNOUNCEMENT_BANNERS: "[]"
   PUBLIC_APP_NAME: "Acies Crest"
-  PUBLIC_APP_ASSETS: "huggingchat"
+  PUBLIC_APP_ASSETS: "aciescrest"
   PUBLIC_APP_COLOR: "yellow"
   PUBLIC_APP_DESCRIPTION: "Making the community's best AI chat models available to everyone."
   PUBLIC_APP_DISCLAIMER_MESSAGE: "Disclaimer: AI is an area of active research with known problems such as biased generation and misinformation. Do not use this application for high-stakes decisions or advice."
