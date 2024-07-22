@@ -33,6 +33,8 @@ envVars:
   ENABLE_ASSISTANTS: "true"
   ENABLE_ASSISTANTS_RAG: "true"
   EXPOSE_API: "true"
+  HF_TOKEN: "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"
+
   METRICS_PORT: 5565
   LOG_LEVEL: "debug"
   METRICS_ENABLED: "true"
@@ -251,6 +253,8 @@ envVars:
           "unlisted": true
         }
     ]
+  MONGODB_URL: "mongodb+srv://albertokiri:I7Sm6o3WdjxWQ6s6@cluster0.toldom2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
   NODE_ENV: "prod"
   NODE_LOG_STRUCTURED_DATA: true
   OLD_MODELS: >
@@ -267,10 +271,18 @@ envVars:
       { "name": "codellama/CodeLlama-70b-Instruct-hf" },
       { "name": "openchat/openchat-3.5-0106" }
     ]
+  OPENID_CONFIG: > 
+    [
+    {"PROVIDER_URL": "https://acies-9b49c.firebaseapp.com/__/auth/handler"},
+    {"CLIENT_ID": "aciescrest"},
+    {"CLIENT_SECRET": "sdf3423fsdfsf4w@4"},
+    {"SCOPES": "oidc.acchat"}
+    ]
+
   PUBLIC_ORIGIN: "https://huggingface.co"
   PUBLIC_SHARE_PREFIX: "https://hf.co/chat"
   PUBLIC_ANNOUNCEMENT_BANNERS: "[]"
-  PUBLIC_APP_NAME: "HuggingChat"
+  PUBLIC_APP_NAME: "Acies Crest"
   PUBLIC_APP_ASSETS: "huggingchat"
   PUBLIC_APP_COLOR: "yellow"
   PUBLIC_APP_DESCRIPTION: "Making the community's best AI chat models available to everyone."
