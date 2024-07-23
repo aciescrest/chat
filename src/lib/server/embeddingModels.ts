@@ -41,6 +41,7 @@ const rawEmbeddingModelJSON =
       {
         "type": "tei",
         "url": "https://api-inference.huggingface.co/models/intfloat/e5-base-v2",
+		"authorization": "Bearer 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",
       }
     ]
   }]`;
