@@ -7,7 +7,7 @@ import {
 	embeddingEndpointSchema,
 	type EmbeddingEndpoint,
 } from "$lib/server/embeddingEndpoints/embeddingEndpoints";
-import { embeddingEndpointTransformersJS } from "$lib/server/embeddingEndpoints/transformersjs/embeddingEndpoints";
+import { embeddingEndpointTei } from "$lib/server/embeddingEndpoints/tei/embeddingEndpoints";
 
 import JSON5 from "json5";
 
@@ -56,10 +56,12 @@ const addEndpoint = (m: Awaited<ReturnType<typeof processEmbeddingModel>>) => ({
 	...m,
 	getEndpoint: async (): Promise<EmbeddingEndpoint> => {
 		if (!m.endpoints) {
-			return embeddingEndpointTransformersJS({
-				type: "transformersjs",
+			return embeddingEndpointTei({
+				type: "tei",
 				weight: 1,
 				model: m,
+				url: "https://api-inference.huggingface.co/models/intfloat/e5-base-v2",
+				authorization: "Bearer " + env.HF_TOKEN ?? env.HF_ACCESS_TOKEN ?? "",
 			});
 		}
 
