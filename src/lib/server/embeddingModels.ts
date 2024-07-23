@@ -30,15 +30,20 @@ const modelConfig = z.object({
 // Default embedding model for backward compatibility
 const rawEmbeddingModelJSON =
 	env.TEXT_EMBEDDING_MODELS ||
-	`[
-	{
-	  "name": "Xenova/gte-small",
-	  "chunkCharLength": 512,
-	  "endpoints": [
-		{ "type": "transformersjs" }
-	  ]
-	}
-]`;
+	`[{
+    "name": "intfloat/e5-base-v2",
+    "displayName": "intfloat/e5-base-v2",
+    "description": "hosted embedding model",
+    "chunkCharLength": 768,
+    "preQuery": "query: ",
+    "prePassage": "passage: ",
+    "endpoints": [
+      {
+        "type": "tei",
+        "url": "https://api-inference.huggingface.co/models/intfloat/e5-base-v2",
+      }
+    ]
+  }]`;
 
 const embeddingModelsRaw = z.array(modelConfig).parse(JSON5.parse(rawEmbeddingModelJSON));
 
