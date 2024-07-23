@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-netlify";
+import adapter from "@sveltejs/adapter-cloudflare";
 import { vitePreprocess } from "@sveltejs/kit/vite";
 import dotenv from "dotenv";
 
@@ -15,8 +15,17 @@ const config = {
 
 	kit: {
 		adapter: adapter({
-			edge: false,
-			split: true,
+			// See below for an explanation of these options
+			routes: {
+				include: ["/*"],
+				exclude: ["<all>"],
+			},
+			platformProxy: {
+				configPath: "wrangler.toml",
+				environment: undefined,
+				experimentalJsonConfig: false,
+				persist: true,
+			},
 		}),
 
 		paths: {

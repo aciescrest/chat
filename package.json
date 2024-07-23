@@ -20,6 +20,7 @@
 		"@faker-js/faker": "^8.4.1",
 		"@iconify-json/carbon": "^1.1.16",
 		"@iconify-json/eos-icons": "^1.1.6",
+		"@sveltejs/adapter-cloudflare": "^2.3.4",
 		"@sveltejs/adapter-netlify": "^2.0.8",
 		"@sveltejs/kit": "^1.30.4",
 		"@tailwindcss/typography": "^0.5.9",
