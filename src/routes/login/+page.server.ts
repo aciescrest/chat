@@ -1,12 +1,12 @@
 import { redirect } from "@sveltejs/kit";
 import { getOIDCAuthorizationUrl } from "$lib/server/auth";
-import { base } from "$app/paths";
+// import { base } from "$app/paths";
 import { env } from "$env/dynamic/private";
 
 export const actions = {
 	async default({ url, locals, request }) {
 		const referer = request.headers.get("referer");
-		let redirectURI = `${(referer ? new URL(referer) : url).origin}${base}/login/callback`;
+		let redirectURI = env.ALTERNATIVE_REDIRECT_URLS;
 
 		// TODO: Handle errors if provider is not responding
 
@@ -14,6 +14,8 @@ export const actions = {
 			const callback = url.searchParams.get("callback") || redirectURI;
 			if (env.ALTERNATIVE_REDIRECT_URLS.includes(callback)) {
 				redirectURI = callback;
+			} else {
+				redirectURI = referer;
 			}
 		}
 
