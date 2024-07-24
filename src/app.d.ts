@@ -1,11 +1,26 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
+
+import 'unplugin-icons/types/svelte'
+
+
+import type { User } from "$lib/types/User";
+
+// See https://kit.svelte.dev/docs/types#app
+// for information about these interfaces
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+		interface Locals {
+			sessionId: string;
+			user?: User & { logoutDisabled?: boolean };
+		}
+
+		interface Error {
+			message: string;
+			errorId?: ReturnType<typeof crypto.randomUUID>;
+		}
 		// interface PageData {}
-		// interface PageState {}
 		// interface Platform {}
 	}
 }
