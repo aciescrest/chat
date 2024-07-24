@@ -1,0 +1,13 @@
+name = "acchat2"
+account_id = "0181a734d34f0527e87ef1a486a2b7a7"
+
+main = "/.svelte-kit/cloudflare/_worker.js"
+site.bucket = ".svelte-kit"
+
+build.command = "npm run build"
+
+compatibility_date = "2024-07-24"
+compatibility_flags = [ "nodejs_compat" ]
+
+
+workers_dev = true
