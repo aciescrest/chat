@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-node";
+import adapter from "@sveltejs/adapter-cloudflare";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import dotenv from "dotenv";
 
@@ -14,7 +14,19 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			// See below for an explanation of these options
+			routes: {
+				include: ["/*"],
+				exclude: ["<all>"],
+			},
+			platformProxy: {
+				configPath: "wrangler.toml",
+				environment: undefined,
+				experimentalJsonConfig: false,
+				persist: false,
+			},
+		}),
 
 		paths: {
 			base: process.env.APP_BASE || "",
