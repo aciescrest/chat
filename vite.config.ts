@@ -27,6 +27,15 @@ export default defineConfig({
 	],
 	optimizeDeps: {
 		include: ["browser-image-resizer", "uuid", "@xenova/transformers"],
+		esbuildOptions: {
+			target: "es2023",
+		},
+	},
+	build: {
+		target: "es2023",
+	},
+	esbuild: {
+		target: "es2023",
 	},
 	server: {
 		open: "/",
