@@ -67,7 +67,39 @@ const modelConfig = z.object({
 	embeddingModel: validateEmbeddingModelByName(embeddingModels).optional(),
 });
 
-const modelsRaw = z.array(modelConfig).parse(JSON5.parse(env.MODELS));
+const modelsHardCoded = `[
+    {
+      "name": "mistralai/Mistral-7B-Instruct-v0.1",
+      "displayName": "mistralai/Mistral-7B-Instruct-v0.1",
+      "description": "Mistral 7B is a new Apache 2.0 model, released by Mistral AI that outperforms Llama2 13B in benchmarks.",
+      "websiteUrl": "https://mistral.ai/news/announcing-mistral-7b/",
+      "preprompt": "",
+      "chatPromptTemplate" : "<s>{{#each messages}}{{#ifUser}}[INST] {{#if @first}}{{#if @root.preprompt}}{{@root.preprompt}} {{/if}}{{/if}}{{content}} [/INST]{{/ifUser}}{{#ifAssistant}}{{content}}</s>{{/ifAssistant}}{{/each}}",
+      "parameters": {
+        "temperature": 0.1,
+        "top_p": 0.95,
+        "repetition_penalty": 1.2,
+        "top_k": 50,
+        "truncate": 3072,
+        "max_new_tokens": 1024,
+        "stop": ["</s>"]
+      },
+      "promptExamples": [
+        {
+          "title": "Write an email from bullet list",
+          "prompt": "As a restaurant owner, write a professional email to the supplier to get these products every week: - Wine (x10) Eggs (x24) Bread (x12)"
+        }, {
+          "title": "Code a snake game",
+          "prompt": "Code a basic snake game in python, give explanations for each step."
+        }, {
+          "title": "Assist in a task",
+          "prompt": "How do I make a delicious lemon cheesecake?"
+        }
+      ]
+    }
+]`;
+
+const modelsRaw = z.array(modelConfig).parse(JSON5.parse(modelsHardCoded));
 
 async function getChatPromptRender(
 	m: z.infer<typeof modelConfig>
@@ -297,7 +329,10 @@ export const models: ProcessedModel[] = await Promise.all(
 export const defaultModel = models[0];
 
 // Models that have been deprecated
-export const oldModels = env.OLD_MODELS
+
+const oldModelsRaw = `[]`;
+
+export const oldModels = oldModelsRaw
 	? z
 			.array(
 				z.object({
@@ -306,7 +341,7 @@ export const oldModels = env.OLD_MODELS
 					displayName: z.string().min(1).optional(),
 				})
 			)
-			.parse(JSON5.parse(env.OLD_MODELS))
+			.parse(JSON5.parse(oldModelsRaw))
 			.map((m) => ({ ...m, id: m.id || m.name, displayName: m.displayName || m.name }))
 	: [];
 

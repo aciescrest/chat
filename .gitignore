@@ -14,3 +14,4 @@ SECRET_CONFIG
 gcp-*.json
 /.netlify
 /.vercel
+.vercel

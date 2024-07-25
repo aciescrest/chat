@@ -1,4 +1,4 @@
-import { Issuer, BaseClient, type UserinfoResponse, TokenSet, custom } from "openid-client";
+import { Issuer, type Client, type UserinfoResponse, TokenSet, custom } from "openid-client";
 import { addHours, addWeeks } from "date-fns";
 import { env } from "$env/dynamic/private";
 import { sha256 } from "$lib/utils/sha256";
@@ -84,7 +84,7 @@ export async function generateCsrfToken(sessionId: string, redirectUrl: string):
 	).toString("base64");
 }
 
-async function getOIDCClient(settings: OIDCSettings): Promise<BaseClient> {
+async function getOIDCClient(settings: OIDCSettings): Promise<Client> {
 	const issuer = await Issuer.discover(OIDConfig.PROVIDER_URL);
 
 	return new issuer.Client({

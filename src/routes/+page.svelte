@@ -81,7 +81,7 @@
 </script>
 
 <svelte:head>
-	<title>{envPublic.PUBLIC_APP_NAME}</title>
+	<title>Acies Crest</title>
 </svelte:head>
 
 <ChatWindow
