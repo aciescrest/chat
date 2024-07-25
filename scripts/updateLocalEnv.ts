@@ -1,7 +1,7 @@
 import fs from "fs";
 import yaml from "js-yaml";
 
-const file = fs.readFileSync("chart/env/prod.yaml", "utf8");
+const file = fs.readFileSync("env/prod.yaml", "utf8");
 
 // have to do a weird stringify/parse because of some node error
 const prod = JSON.parse(JSON.stringify(yaml.load(file)));
