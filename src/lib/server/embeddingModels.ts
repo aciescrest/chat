@@ -1,3 +1,5 @@
+import { env } from "$env/dynamic/private";
+
 import { z } from "zod";
 import { sum } from "$lib/utils/sum";
 import {
@@ -26,14 +28,17 @@ const modelConfig = z.object({
 });
 
 // Default embedding model for backward compatibility
-const rawEmbeddingModelJSON = `[
-		{"name": "Xenova/gte-small",
-		"chunkCharLength": 512,
-		"endpoints": [
-			{ "type": "transformersjs" }
-		]
-		}
-	]`;
+const rawEmbeddingModelJSON =
+	env.TEXT_EMBEDDING_MODELS ||
+	`[
+	{
+	  "name": "Xenova/gte-small",
+	  "chunkCharLength": 512,
+	  "endpoints": [
+		{ "type": "transformersjs" }
+	  ]
+	}
+]`;
 
 const embeddingModelsRaw = z.array(modelConfig).parse(JSON5.parse(rawEmbeddingModelJSON));
 
