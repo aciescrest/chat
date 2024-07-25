@@ -36,6 +36,9 @@ export default defineConfig({
 	},
 	esbuild: {
 		target: "es2023",
+		platform: "node",
+		loader: "ts",
+		format: "esm",
 	},
 	server: {
 		open: "/",

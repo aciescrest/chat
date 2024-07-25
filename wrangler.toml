@@ -1,13 +1,14 @@
 name = "acchat"
 account_id = "0181a734d34f0527e87ef1a486a2b7a7"
 
-main = "./.cloudflare/worker.js"
-site.bucket = "./.cloudflare/public"
+main = "build/index.js"
+site.bucket = "build"
 
 build.command = "npm run build"
 
 compatibility_date = "2021-11-12"
+node_compat = true
+
 workers_dev = true
 
-compatibility_flags = [ "nodejs_compat" ]
 

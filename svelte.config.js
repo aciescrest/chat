@@ -1,4 +1,4 @@
-import adapter from "@sveltejs/adapter-netlify";
+import adapter from "@sveltejs/adapter-vercel";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import dotenv from "dotenv";
 
@@ -15,12 +15,7 @@ const config = {
 
 	kit: {
 		adapter: adapter({
-			// edge: true,
-
-			// if true, will split your app into multiple functions
-			// instead of creating a single one for the entire app.
-			// if `edge` is true, this option cannot be used
-			split: true,
+			// see below for options that can be set here
 		}),
 
 		paths: {
