@@ -13,15 +13,6 @@ if (dev) {
 			},
 		},
 	};
-} else {
-	options = {
-		transport: {
-			target: "pino-pretty",
-			options: {
-				colorize: true,
-			},
-		},
-	};
 }
 
 export const logger = pino({ ...options, level: env.LOG_LEVEL ?? "info" });
