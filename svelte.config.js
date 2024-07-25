@@ -23,7 +23,10 @@ const config = {
 				experimentalJsonConfig: false,
 				persist: false
 			}
-		})
+		}),
+		prerender: {
+			handleHttpError: "warn"
+		}
 	}
 };
 

@@ -18,11 +18,21 @@ export default defineConfig({
 	},
 	build: {
 		rollupOptions: {
-		  external: [
-			"@anthropic-ai/vertex-sdk",
-		  ],
+			external: [
+				"@anthropic-ai/vertex-sdk", "sharp"
+			],
 		},
-	  },
+		target: "es2023",
+	},
+	esbuild: {
+		target: "es2023",
+		platform: "browser",
+		loader : "ts",
+		format: "esm",
+	},
+	server: {
+		open: "/",
+	},
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}']
 	}
