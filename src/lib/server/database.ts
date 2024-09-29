@@ -19,6 +19,7 @@ import { logger } from "$lib/server/logger";
 import { building } from "$app/environment";
 import type { TokenCache } from "$lib/types/TokenCache";
 import { onExit } from "./exitHandler";
+import type { EHR } from "$lib/types/EHR";
 
 export const CONVERSATION_STATS_COLLECTION = "conversations.stats";
 
@@ -88,6 +89,7 @@ export class Database {
 		const semaphores = db.collection<Semaphore>("semaphores");
 		const tokenCaches = db.collection<TokenCache>("tokens");
 		const tools = db.collection<CommunityToolDB>("tools");
+		const EHR = db.collection<EHR>("EHR");
 
 		return {
 			conversations,
@@ -106,6 +108,7 @@ export class Database {
 			semaphores,
 			tokenCaches,
 			tools,
+			EHR,
 		};
 	}
 
@@ -129,6 +132,7 @@ export class Database {
 			semaphores,
 			tokenCaches,
 			tools,
+			EHR,
 		} = this.getCollections();
 
 		conversations
@@ -228,6 +232,16 @@ export class Database {
 		tools.createIndex({ createdById: 1, userCount: -1 }).catch((e) => logger.error(e));
 		tools.createIndex({ userCount: 1 }).catch((e) => logger.error(e));
 		tools.createIndex({ last24HoursCount: 1 }).catch((e) => logger.error(e));
+
+		EHR.createIndex({ createdById: 1, userCount: -1 }).catch((e) => logger.error(e));
+		EHR.createIndex({ userCount: 1 }).catch((e) => logger.error(e));
+		EHR.createIndex({ featured: 1, userCount: -1 }).catch((e) => logger.error(e));
+		EHR.createIndex({ modelId: 1, userCount: -1 }).catch((e) => logger.error(e));
+		EHR.createIndex({ searchTokens: 1 }).catch((e) => logger.error(e));
+		EHR.createIndex({ last24HoursCount: 1 }).catch((e) => logger.error(e));
+		EHR.createIndex({ last24HoursUseCount: -1, useCount: -1, _id: 1 }).catch((e) =>
+			logger.error(e)
+		);
 	}
 }
 

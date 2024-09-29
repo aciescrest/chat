@@ -1,42 +1,45 @@
-## Privacy
+## Privacy Policy - Acies Crest
 
-> Last updated: April 15, 2024
+> Last updated September 15, 2024
 
-Users of HuggingChat are authenticated through their HF user account.
+**Acies Crest** is committed to protecting the privacy and security of your personal health information. This Privacy Policy describes how we collect, use, disclose, and safeguard your information when you use our AI-powered healthcare administration and EHR management applications. 
 
-We endorse Privacy by Design. As such, your conversations are private to you and will not be shared with anyone, including model authors, for any purpose, including for research or model training purposes.
+**Information We Collect:**
 
-You conversation data will only be stored to let you access past conversations. You can click on the Delete icon to delete any past conversation at any moment.
+* **Patient Demographics:** This includes information such as name, date of birth, gender, contact information, emergency contact details, insurance information, ethnicity/race, and unique patient ID/medical record number.
+* **Medical History:** We collect information about your past medical history, family history, allergies, current medications, vital signs, diagnoses, problem lists, laboratory results, and radiology reports.
+* **Treatment Information:** This includes care plans, referrals, and visit history.
+* **Consent and Legal Documents:** We may collect information related to informed consent forms and advance directives. 
 
-🗓 Please also consult huggingface.co's main privacy policy at <https://huggingface.co/privacy>. To exercise any of your legal privacy rights, please send an email to <privacy@huggingface.co>.
+**How We Use Your Information:**
 
-## About available LLMs
+* **EHR Management:** We use your information to create, store, and manage your electronic health records, facilitating efficient and accurate healthcare administration.
+* **AI-Powered Insights:** We may use your de-identified health information to train and improve our AI algorithms, which helps us deliver better insights and support for healthcare professionals.
+* **Personalized Care:** We may use your information to provide you with personalized care recommendations and support.
+* **Communication:** We may use your contact information to communicate with you about your healthcare, appointments, and other relevant updates.
 
-The goal of this app is to showcase that it is now possible to build an open source alternative to ChatGPT. 💪
+**Data Security:**
 
-We aim to always provide a diverse set of state of the art open LLMs, hence we rotate the available models over time.
+* **Encryption:** We use industry-standard encryption to protect your data both in transit and at rest.
+* **Access Controls:** We implement strict access controls to limit access to your information to authorized personnel only.
+* **Regular Audits:** We conduct regular security audits to identify and address potential vulnerabilities.
 
-Historically, HuggingChat has been running models such as:
+**Data Sharing:**
 
-- [Llama 2 70B](https://huggingface.co/meta-llama/Llama-2-70b-chat-hf)
-- [CodeLlama 35B](https://about.fb.com/news/2023/08/code-llama-ai-for-coding/)
-- [Falcon 180B](https://www.tii.ae/news/technology-innovation-institute-introduces-worlds-most-powerful-open-llm-falcon-180b)
-- [Mistral 7B](https://mistral.ai/news/announcing-mistral-7b/)
-- [Cohere Command R+](https://huggingface.co/chat/models/CohereForAI/c4ai-command-r-plus)
-- [Google Gemma 7B](https://huggingface.co/chat/models/google/gemma-1.1-7b-it)
+* We do **not** sell or rent your personal health information to third parties.
+* We may share your information with healthcare providers involved in your care, as necessary for treatment, payment, or healthcare operations. 
+* We may disclose your information if required by law or to comply with a legal process.
 
-This is only a partial list. Check the [models](https://huggingface.co/chat/models/) page for up-to-date list of the best available LLMs.
+**Your Rights:**
 
-## Technical details
+* **Access:** You have the right to access and request a copy of your personal health information.
+* **Correction:** You have the right to request correction of any inaccuracies in your health information.
+* **Deletion:** You may request deletion of your personal health information, subject to certain legal and regulatory requirements.
 
-This app is running in a [Space](https://huggingface.co/docs/hub/spaces-overview), which entails that the code for this UI is publicly visible [inside the Space repo](https://huggingface.co/spaces/huggingchat/chat-ui/tree/main).
+**Contact Us:**
 
-**Further development takes place on the [huggingface/chat-ui GitHub repo](https://github.com/huggingface/chat-ui).**
+If you have any questions about this Privacy Policy or your privacy rights, please contact us at [inquiries@aciescrest.com](mailto:inquiries@aciescrest.com). 
 
-The inference backend is running the optimized [text-generation-inference](https://github.com/huggingface/text-generation-inference) on HuggingFace's Inference API infrastructure.
+**Changes to this Policy:**
 
-It is therefore possible to deploy a copy of this app to a Space and customize it (swap model, add some UI elements, or store user messages according to your own Terms and conditions). You can also 1-click deploy your own instance using the [Chat UI Spaces Docker template](https://huggingface.co/new-space?template=huggingchat/chat-ui-template).
-
-We welcome any feedback on this app: please participate to the public discussion at <https://huggingface.co/spaces/huggingchat/chat-ui/discussions>
-
-<a target="_blank" href="https://huggingface.co/spaces/huggingchat/chat-ui/discussions"><img src="https://huggingface.co/datasets/huggingface/badges/raw/main/open-a-discussion-xl.svg" title="open a discussion"></a>
+We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the updated policy on our website. 
