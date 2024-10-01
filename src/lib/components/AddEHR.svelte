@@ -20,6 +20,9 @@
 	import HoverTooltip from "./HoverTooltip.svelte";
 	import { findCurrentModel } from "$lib/utils/models";
 	import AssistantToolPicker from "./AssistantToolPicker.svelte";
+	import type { EHR } from "$lib/types/EHR";
+	import Flatpickr from "svelte-flatpickr";
+	import("flatpickr/dist/flatpickr.min.css");
 
 	type ActionData = {
 		error: boolean;
@@ -29,10 +32,10 @@
 		}[];
 	} | null;
 
-	type AssistantFront = Omit<Assistant, "_id" | "createdById"> & { _id: string };
+	type EHRFront = Omit<EHR, "_id" | "createdById"> & { _id: string };
 
 	export let form: ActionData;
-	export let assistant: AssistantFront | undefined = undefined;
+	export let assistant: EHRFront | undefined = undefined;
 	export let models: Model[] = [];
 
 	let files: FileList | null = null;
@@ -42,6 +45,11 @@
 	let dynamicPrompt = assistant?.dynamicPrompt ?? false;
 	let showModelSettings = Object.values(assistant?.generateSettings ?? {}).some((v) => !!v);
 
+	let medicalNotes: { note: string; visitDate: string }[] = assistant?.medicalNotes || [];
+	let newNote = "";
+	let newVisitDate = "";
+    let medicalNotesInput: HTMLInputElement | null = null; // Store input element
+
 	let compress: typeof readAndCompressImage | null = null;
 
 	onMount(async () => {
@@ -49,6 +57,12 @@
 		compress = module.readAndCompressImage;
 
 		modelId = findCurrentModel(models, assistant ? assistant.modelId : $settings.activeModel).id;
+
+		medicalNotesInput = document.querySelector('input[name="medicalNotes"]') as HTMLInputElement;
+		//Set initial values on client-side if available
+		if(medicalNotesInput){
+			medicalNotesInput.value = JSON.stringify(medicalNotes)
+		}
 	});
 
 	let inputMessage1 = assistant?.exampleInputs[0] ?? "";
@@ -100,6 +114,25 @@
 
 	$: templateVariables = [...systemPrompt.matchAll(regex)].map((match) => match[1]);
 	$: selectedModel = models.find((m) => m.id === modelId);
+
+	
+	function addMedicalNote() {
+		if (newNote && newVisitDate) {
+			medicalNotes = [...medicalNotes, { note: newNote, visitDate: newVisitDate }];
+			newNote = "";
+			newVisitDate = "";
+		}
+	}
+
+	function removeMedicalNote(index: number) {
+		medicalNotes = medicalNotes.filter((_, i) => i !== index);
+	}
+
+	$: {
+        if (medicalNotesInput) { // Only update if input element exists
+            medicalNotesInput.value = JSON.stringify(medicalNotes);
+        }
+    }
 </script>
 
 <form
@@ -151,6 +184,7 @@
 		}
 
 		formData.set("tools", tools.join(","));
+		formData.set("medicalNotes", JSON.stringify(medicalNotes));
 
 		return async ({ result }) => {
 			loading = false;
@@ -160,7 +194,7 @@
 >
 	{#if assistant}
 		<h2 class="text-xl font-semibold">
-			Edit Assistant: {assistant?.name ?? "assistant"}
+			Edit EHR: {assistant?.name ?? "assistant"}
 		</h2>
 		<p class="mb-6 text-sm text-gray-500">
 			Modifying an existing assistant will propagate the changes to all users.
@@ -205,7 +239,7 @@
 
 						<label
 							for="avatar"
-							class="invisible absolute bottom-0 h-12 w-12 rounded-full bg-black bg-opacity-50 p-1 group-hover:visible hover:visible"
+							class="invisible absolute bottom-0 h-12 w-12 rounded-full bg-black bg-opacity-50 p-1 hover:visible group-hover:visible"
 						>
 							<CarbonPen class="mx-auto my-auto h-full cursor-pointer text-center text-white" />
 						</label>
@@ -239,7 +273,7 @@
 				<div class="mb-1 font-semibold">Name</div>
 				<input
 					name="name"
-					class="w-full rounded-lg border-2 border-gray-200 bg-gray-100 p-2"
+					class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
 					placeholder="Assistant Name"
 					value={assistant?.name ?? ""}
 				/>
@@ -247,14 +281,139 @@
 			</label>
 
 			<label>
-				<div class="mb-1 font-semibold">Description</div>
+				<div class="mb-1 font-semibold">Patient Demographics</div>
+				<div
+					class="mt-2 grid gap-1.5 rounded-lg border border-blue-500/20 bg-blue-500/5 px-2 py-0.5 pb-4 pt-4 text-sm md:grid-cols-2"
+				>
+					<div>
+						<div class="mb-1">Age</div>
+						<input
+							name="age"
+							placeholder=""
+							value={assistant?.demographics?.age ?? ""}
+							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+						/>
+						<p class="text-xs text-red-500">{getError("name", form)}</p>
+					</div>
+					<div>
+						<div class="mb-1">Gender</div>
+						<select
+							name="gender"
+							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+							value={assistant?.demographics?.gender}
+						>
+							<option value="male">Male</option>
+							<option value="female">Female</option>
+							<p class="text-xs text-red-500">{getError("gender", form)}</p>
+						</select>
+					</div>
+					<div>
+						<div class="mb-1">Phone Number</div>
+						<input
+							name="phoneNumber"
+							placeholder=""
+							value={assistant?.demographics?.phoneNumber ?? ""}
+							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+						/>
+						<p class="text-xs text-red-500">{getError("phoneNumber", form)}</p>
+					</div>
+					<div>
+						<div class="mb-1">Address</div>
+						<input
+							name="address"
+							placeholder=" "
+							value={assistant?.demographics?.address ?? ""}
+							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+						/>
+						<p class="text-xs text-red-500">{getError("address", form)}</p>
+					</div>
+				</div>
+			</label>
+
+			<label>
+				<div class="mb-1 font-semibold">Medical History</div>
 				<textarea
-					name="description"
-					class="h-15 w-full rounded-lg border-2 border-gray-200 bg-gray-100 p-2"
-					placeholder="It knows everything about python"
-					value={assistant?.description ?? ""}
+					name="medicalHistory"
+					class="h-15 w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+					placeholder=""
+					value={assistant?.medicalHistory ?? ""}
 				/>
-				<p class="text-xs text-red-500">{getError("description", form)}</p>
+				<p class="text-xs text-red-500">{getError("medicalHistory", form)}</p>
+			</label>
+
+			<label>
+				<div class="mb-1 font-semibold">Medication List</div>
+				<textarea
+					name="medicationList"
+					class="h-15 w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+					placeholder=" "
+					value={assistant?.medicationList ?? ""}
+				/>
+				<p class="text-xs text-red-500">{getError("medicationList", form)}</p>
+			</label>
+
+			<label>
+				<div class="mb-1 font-semibold">Vital Signs</div>
+				<textarea
+					name="vitalSigns"
+					class="h-15 w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+					placeholder=" "
+					value={assistant?.vitalSigns ?? ""}
+				/>
+				<p class="text-xs text-red-500">{getError("vitalSigns", form)}</p>
+			</label>
+
+			<label>
+				<div class="mb-1 font-semibold">Laboratory Test Results</div>
+				<textarea
+					name="labTestResults"
+					class="h-15 w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+					placeholder=" "
+					value={assistant?.labTestResults ?? ""}
+				/>
+				<p class="text-xs text-red-500">{getError("labTestResults", form)}</p>
+			</label>
+
+			<label>
+				<div class="mb-1 font-semibold">Medical Visits</div>
+				<input type="hidden" name="medicalNotes" bind:this={medicalNotesInput} />
+
+				{#each medicalNotes as { note, visitDate }, index}
+					<div class="mb-2 flex flex-col rounded-lg border p-2">
+						<div class="mb-1 flex items-center justify-between">
+							<Flatpickr
+								bind:value={visitDate}
+								options={{ enableTime: true, dateFormat: "Y-m-d H:i" }}
+								class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+							/>
+							<button
+								type="button"
+								on:click={() => removeMedicalNote(index)}
+								class="text-red-500 hover:text-red-700">X</button
+							>
+						</div>
+						<textarea
+							bind:value={note}
+							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+						/>
+					</div>
+				{/each}
+
+				<div class="mb-2 flex flex-col rounded-lg border p-2">
+					<div class="mb-1 flex items-center justify-between">
+						<Flatpickr
+							bind:value={newVisitDate}
+							options={{ enableTime: true, dateFormat: "Y-m-d H:i" }}
+							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+						/>
+					</div>
+					<textarea
+						bind:value={newNote}
+						placeholder="Add new note"
+						class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+					/>
+				</div>
+				<button type="button" on:click={addMedicalNote} class="btn">Add Note</button>
 			</label>
 
 			<label>
@@ -293,7 +452,7 @@
 									label="Temperature: Controls creativity, higher values allow more variety."
 								>
 									<CarbonHelpFilled
-										class="inline text-xxs text-gray-500 group-hover/tooltip:text-blue-600"
+										class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
 									/>
 								</HoverTooltip>
 							</span>
@@ -315,7 +474,7 @@
 									label="Top P: Sets word choice boundaries, lower values tighten focus."
 								>
 									<CarbonHelpFilled
-										class="inline text-xxs text-gray-500 group-hover/tooltip:text-blue-600"
+										class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
 									/>
 								</HoverTooltip>
 							</span>
@@ -338,7 +497,7 @@
 									label="Repetition penalty: Prevents reuse, higher values decrease repetition."
 								>
 									<CarbonHelpFilled
-										class="inline text-xxs text-gray-500 group-hover/tooltip:text-blue-600"
+										class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
 									/>
 								</HoverTooltip>
 							</span>
@@ -359,7 +518,7 @@
 									label="Top K: Restricts word options, lower values for predictability."
 								>
 									<CarbonHelpFilled
-										class="inline text-xxs text-gray-500 group-hover/tooltip:text-blue-600"
+										class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
 									/>
 								</HoverTooltip>
 							</span>
@@ -414,7 +573,7 @@
 					<span class="text-smd font-semibold"
 						>Tools
 						<CarbonTools class="inline text-xs text-purple-600" />
-						<span class="ml-1 rounded bg-gray-100 px-1 py-0.5 text-xxs font-normal text-gray-600"
+						<span class="text-xxs ml-1 rounded bg-gray-100 px-1 py-0.5 font-normal text-gray-600"
 							>Experimental</span
 						>
 					</span>
@@ -426,7 +585,7 @@
 			{/if}
 			{#if $page.data.enableAssistantsRAG}
 				<div class="flex flex-col flex-nowrap pb-4">
-					<span class="mt-2 text-smd font-semibold"
+					<span class="text-smd mt-2 font-semibold"
 						>Internet access
 						<IconInternet classNames="inline text-sm text-blue-600" />
 
@@ -434,7 +593,7 @@
 							<a
 								href="https://huggingface.co/spaces/huggingchat/chat-ui/discussions/385"
 								target="_blank"
-								class="ml-0.5 rounded bg-gray-100 px-1 py-0.5 text-xxs font-normal text-gray-700 underline decoration-gray-400"
+								class="text-xxs ml-0.5 rounded bg-gray-100 px-1 py-0.5 font-normal text-gray-700 underline decoration-gray-400"
 								>Give feedback</a
 							>
 						{/if}
@@ -530,7 +689,7 @@
 
 		<div class="relative col-span-1 flex h-full flex-col">
 			<div class="mb-1 flex justify-between text-sm">
-				<span class="block font-semibold"> Instructions (System Prompt) </span>
+				<span class="block font-semibold"> Medical Notes </span>
 				{#if dynamicPrompt && templateVariables.length}
 					<div class="relative">
 						<button
@@ -540,7 +699,7 @@
 							{templateVariables.length} template variable{templateVariables.length > 1 ? "s" : ""}
 						</button>
 						<div
-							class="invisible absolute right-0 top-6 z-10 rounded-lg border bg-white p-2 text-xs shadow-lg peer-focus:visible hover:visible sm:w-96"
+							class="invisible absolute right-0 top-6 z-10 rounded-lg border bg-white p-2 text-xs shadow-lg hover:visible peer-focus:visible sm:w-96"
 						>
 							Will perform a GET request and inject the response into the prompt. Works better with
 							plain text, csv or json content.
@@ -553,7 +712,7 @@
 					</div>
 				{/if}
 			</div>
-			<label class="pb-2 text-sm has-[:checked]:font-semibold">
+			<label class="has-[:checked]:font-semibold pb-2 text-sm">
 				<input type="checkbox" name="dynamicPrompt" bind:checked={dynamicPrompt} />
 				Dynamic Prompt
 				<p class="mb-2 text-xs font-normal text-gray-500">
@@ -566,7 +725,7 @@
 			<div class="relative mb-20 flex h-full flex-col gap-2">
 				<textarea
 					name="preprompt"
-					class="min-h-[8lh] flex-1 rounded-lg border-2 border-gray-200 bg-gray-100 p-2 text-sm"
+					class="min-h-[8lh] flex-1 rounded-lg border-2 border-gray-200 bg-transparent p-2 text-sm"
 					placeholder="You'll act as..."
 					bind:value={systemPrompt}
 				/>

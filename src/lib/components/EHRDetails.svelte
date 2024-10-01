@@ -35,6 +35,12 @@
 		| "userCount"
 		| "tools"
 		| "featured"
+		| "demographics"
+		| "medicalHistory"
+		| "medicalNotes"
+		| "vitalSigns"
+		| "medicationList"
+		| "labTestResults"
 	>;
 
 	const dispatch = createEventDispatcher<{ message: string }>();
@@ -55,7 +61,7 @@
 	const settings = useSettingsStore();
 </script>
 
-<div class="flex h-full w-full flex-col content-center items-center justify-center pb-52">
+<div class="scrollbar-custom mr-1 h-full overflow-y-auto py-12 max-sm:pt-8 md:py-24 pl-5 pr-5">
 	<div
 		class="relative mt-auto rounded-2xl bg-gray-100 text-gray-600 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-300"
 	>
@@ -165,32 +171,83 @@
 			}}
 			class="absolute -bottom-6 right-2 inline-flex items-center justify-center text-xs text-gray-600 underline hover:brightness-50 dark:text-gray-400 dark:hover:brightness-110"
 		>
-			<CarbonRenew class="text-xxs mr-1.5" /> Reset to default model
+			<CarbonRenew class="text-xxs mr-1.5" /> Reset to default chat
 		</button>
 	</div>
-	{#if assistant.exampleInputs}
-		<div class="mx-auto mt-auto w-full gap-8 sm:-mb-8">
-			<div class="md:col-span-2 md:mt-6">
+
+	<dl class="mt-8 grid grid-cols-1 gap-3 sm:gap-5 xl:grid-cols-2">
+		<div
+			class="relative flex flex-col gap-2 overflow-hidden rounded-xl border bg-gray-50/50 px-6 py-5 shadow hover:bg-gray-50 hover:shadow-inner dark:border-gray-800/70 dark:bg-gray-950/20 dark:hover:bg-gray-950/40"
+		>
+			<div class="flex items-center justify-between gap-1">
 				<div
-					class="grid grid-cols-1 gap-3 {assistant.exampleInputs.length > 1
-						? 'md:grid-cols-2'
-						: ''}"
+					class="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
 				>
-					{#each assistant.exampleInputs as example}
-						<button
-							type="button"
-							class="text-smd truncate whitespace-nowrap rounded-xl border bg-gray-50 px-3 py-2 text-left text-gray-600 hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-							on:click={() => dispatch("message", example)}
-						>
-							{example}
-						</button>
-					{/each}
+					Demographics
 				</div>
 			</div>
+			<dt class="flex items-center gap-2 font-semibold">
+				{assistant?.medicalHistory}
+			</dt>
+			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
+				{assistant.demographics?.address || "-"}
+			</dd>
 		</div>
-	{/if}
 
-	
+		<div
+			class="relative flex flex-col gap-2 overflow-hidden rounded-xl border bg-gray-50/50 px-6 py-5 shadow hover:bg-gray-50 hover:shadow-inner dark:border-gray-800/70 dark:bg-gray-950/20 dark:hover:bg-gray-950/40"
+		>
+			<div class="flex items-center justify-between gap-1">
+				<div
+					class="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
+				>
+					Demographics
+				</div>
+			</div>
+			<dt class="flex items-center gap-2 font-semibold">
+				{assistant.name}
+			</dt>
+			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
+				{assistant?.description || "-"}
+			</dd>
+		</div>
+
+		<div
+			class="relative flex flex-col gap-2 overflow-hidden rounded-xl border bg-gray-50/50 px-6 py-5 shadow hover:bg-gray-50 hover:shadow-inner dark:border-gray-800/70 dark:bg-gray-950/20 dark:hover:bg-gray-950/40"
+		>
+			<div class="flex items-center justify-between gap-1">
+				<div
+					class="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
+				>
+					Demographics
+				</div>
+			</div>
+			<dt class="flex items-center gap-2 font-semibold">
+				{assistant.name}
+			</dt>
+			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
+				{assistant?.description || "-"}
+			</dd>
+		</div>
+
+		<div
+			class="relative flex flex-col gap-2 overflow-hidden rounded-xl border bg-gray-50/50 px-6 py-5 shadow hover:bg-gray-50 hover:shadow-inner dark:border-gray-800/70 dark:bg-gray-950/20 dark:hover:bg-gray-950/40"
+		>
+			<div class="flex items-center justify-between gap-1">
+				<div
+					class="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
+				>
+					Demographics
+				</div>
+			</div>
+			<dt class="flex items-center gap-2 font-semibold">
+				{assistant.name}
+			</dt>
+			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
+				{assistant?.description || "-"}
+			</dd>
+		</div>
+	</dl>
 
 	{#if $settings.ehrs.includes(assistant._id.toString())}
 		<button
@@ -233,5 +290,4 @@
 			</button>
 		</form>
 	{/if}
-
 </div>

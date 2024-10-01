@@ -79,10 +79,7 @@
 		const query = $page.url.searchParams.get("q");
 		if (query) createConversation(query);
 	});
-
-	console.log("AM",$settings.activeModel);
-	console.log("EHR",data.ehr);
-
+	
 </script>
 
 <svelte:head>

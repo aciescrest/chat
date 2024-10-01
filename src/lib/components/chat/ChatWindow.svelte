@@ -270,6 +270,30 @@
 				<SystemPromptModal preprompt={preprompt ?? ""} />
 			{/if}
 
+			{#if $page.data?.ehr && !!messages.length}
+				<a
+					class="mx-auto flex items-center gap-1.5 rounded-full border border-gray-100 bg-gray-50 py-1 pl-1 pr-3 text-sm text-gray-800 hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+					href="{base}/ehr/{$page.data.ehr._id}"
+				>
+					{#if $page.data?.ehr.avatar}
+						<img
+							src="{base}/ehr/{$page.data?.ehr._id.toString()}/avatar.jpg?hash=${$page.data.ehr
+								.avatar}"
+							alt="Avatar"
+							class="size-5 rounded-full object-cover"
+						/>
+					{:else}
+						<div
+							class="size-6 flex items-center justify-center rounded-full bg-gray-300 font-bold uppercase text-gray-500"
+						>
+							{$page.data?.ehr.name[0]}
+						</div>
+					{/if}
+
+					{$page.data.ehr.name}
+				</a>
+			{/if}
+
 			{#if messages.length > 0}
 				<div class="flex h-max flex-col gap-8 pb-52">
 					<ChatMessage

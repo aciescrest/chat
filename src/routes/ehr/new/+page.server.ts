@@ -55,6 +55,46 @@ const newAsssistantSchema = z.object({
 				.map((el) => el._id.toString()),
 		])
 		.optional(),
+
+	// Simplified and made optional
+	// New fields:
+	demographics: z.object({
+		age: z.coerce.number().int().positive(),
+		gender: z.string().min(1),
+		phoneNumber: z.string().min(1),
+		address: z.string().min(1),
+	}),
+	medicalHistory: z.string().min(1),
+	medicationList: z.string().min(1),
+	vitalSigns: z.string().min(1),
+	labTestResults: z.string().min(1),
+	medicalNotes: z.preprocess(
+		(arg) => {
+			try {
+				const parsed = JSON.parse(arg as string);
+
+				// Convert to a true array using Array.from
+				const validatedNotes = Array.from(
+					parsed.map(() => {
+						/* ... your validation logic ... */
+					})
+				).filter((item) => item !== undefined);
+
+				return validatedNotes;
+			} catch (error) {
+				console.error("Error parsing medicalNotes:", error);
+				return [];
+			}
+		},
+		z
+			.array(
+				z.object({
+					note: z.string(),
+					visitDate: z.string().datetime(),
+				})
+			)
+			.optional()
+	),
 });
 
 const uploadAvatar = async (avatar: File, assistantId: ObjectId): Promise<string> => {
@@ -163,6 +203,18 @@ export const actions: Actions = {
 				repetition_penalty: parse.data.repetition_penalty,
 				top_k: parse.data.top_k,
 			},
+
+			demographics: {
+				age: parse.data.demographics.age,
+				gender: parse.data.demographics.gender,
+				phoneNumber: parse.data.demographics.phoneNumber,
+				address: parse.data.demographics.address,
+			},
+			medicalHistory: parse.data.medicalHistory,
+			medicationList: parse.data.medicationList,
+			vitalSigns: parse.data.vitalSigns,
+			labTestResults: parse.data.labTestResults,
+			medicalNotes: parse.data.medicalNotes || [],
 		});
 
 		// add insertedId to user settings
