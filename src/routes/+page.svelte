@@ -45,6 +45,7 @@
 					model,
 					preprompt: $settings.customPrompts[$settings.activeModel],
 					assistantId: data.assistant?._id,
+					ehrId: data.ehr?._id,
 				}),
 			});
 
@@ -78,6 +79,10 @@
 		const query = $page.url.searchParams.get("q");
 		if (query) createConversation(query);
 	});
+
+	console.log("AM",$settings.activeModel);
+	console.log("EHR",data.ehr);
+
 </script>
 
 <svelte:head>
@@ -88,6 +93,7 @@
 	on:message={(ev) => createConversation(ev.detail)}
 	{loading}
 	assistant={data.assistant}
+	ehr={data.ehr}
 	currentModel={findCurrentModel([...data.models, ...data.oldModels], $settings.activeModel)}
 	models={data.models}
 	bind:files

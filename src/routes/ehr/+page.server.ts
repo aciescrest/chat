@@ -2,6 +2,7 @@ import { base } from "$app/paths";
 import { env } from "$env/dynamic/private";
 import { Database, collections } from "$lib/server/database.js";
 import { SortKey, type Assistant } from "$lib/types/Assistant";
+import type { EHR } from "$lib/types/EHR.js";
 import type { User } from "$lib/types/User";
 import { generateQueryTokens } from "$lib/utils/searchTokens.js";
 import { error, redirect } from "@sveltejs/kit";
@@ -68,7 +69,7 @@ export const load = async ({ url, locals }) => {
 	const numTotalItems = await Database.getInstance().getCollections().EHR.countDocuments(filter);
 
 	return {
-		assistants: JSON.parse(JSON.stringify(assistants)) as Array<Assistant>,
+		assistants: JSON.parse(JSON.stringify(assistants)) as Array<EHR>,
 		selectedModel: modelId ?? "",
 		numTotalItems,
 		numItemsPerPage: NUM_PER_PAGE,

@@ -168,7 +168,7 @@ export const actions: Actions = {
 		// add insertedId to user settings
 
 		await collections.settings.updateOne(authCondition(locals), {
-			$addToSet: { EHR: insertedId },
+			$addToSet: { ehrs: insertedId },
 		});
 
 		redirect(302, `${base}/ehr/${insertedId}`);

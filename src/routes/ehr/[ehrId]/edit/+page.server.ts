@@ -74,10 +74,26 @@ const uploadAvatar = async (avatar: File, assistantId: ObjectId): Promise<string
 	});
 };
 
+export const load = async ({ params }) => {
+	try {
+		const assistant = await collections.EHR.findOne({
+			_id: new ObjectId(params.ehrId),
+		});
+
+		if (!assistant) {
+			redirect(302, `${base}`);
+		}
+
+		return { assistant: JSON.parse(JSON.stringify(assistant)) };
+	} catch {
+		redirect(302, `${base}`);
+	}
+};
+
 export const actions: Actions = {
 	default: async ({ request, locals, params }) => {
 		const assistant = await collections.EHR.findOne({
-			_id: new ObjectId(params.assistantId),
+			_id: new ObjectId(params.ehrId),
 		});
 
 		if (!assistant) {

@@ -36,6 +36,8 @@
 	import { useSettingsStore } from "$lib/stores/settings";
 	import type { ToolFront } from "$lib/types/Tool";
 	import ModelSwitch from "./ModelSwitch.svelte";
+	import type { EHR } from "$lib/types/EHR";
+	import EhrIntroduction from "./EHRIntroduction.svelte";
 
 	export let messages: Message[] = [];
 	export let loading = false;
@@ -45,6 +47,7 @@
 	export let currentModel: Model;
 	export let models: Model[];
 	export let assistant: Assistant | undefined = undefined;
+	export let ehr: EHR | undefined = undefined;
 	export let preprompt: string | undefined = undefined;
 	export let files: File[] = [];
 
@@ -255,7 +258,7 @@
 						/>
 					{:else}
 						<div
-							class="flex size-6 items-center justify-center rounded-full bg-gray-300 font-bold uppercase text-gray-500"
+							class="size-6 flex items-center justify-center rounded-full bg-gray-300 font-bold uppercase text-gray-500"
 						>
 							{$page.data?.assistant.name[0]}
 						</div>
@@ -299,6 +302,19 @@
 					isAuthor={!shared}
 					readOnly={isReadOnly}
 					model={currentModel}
+				/>
+			{:else if ehr}
+				<EhrIntroduction
+					{models}
+					{ehr}
+					on:message={(ev) => {
+						if ($page.data.loginRequired) {
+							ev.preventDefault();
+							loginModalOpen = true;
+						} else {
+							dispatch("message", ev.detail);
+						}
+					}}
 				/>
 			{:else if !assistant}
 				<ChatIntroduction

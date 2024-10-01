@@ -9,8 +9,24 @@ import { z } from "zod";
 import { logger } from "$lib/server/logger";
 import type { EHR } from "$lib/types/EHR";
 
-async function assistantOnlyIfAuthor(locals: App.Locals, assistantId?: string) {
-	const assistant = await collections.EHR.findOne({ _id: new ObjectId(assistantId) });
+export const load = async ({ params }) => {
+	try {
+		const assistant = await collections.EHR.findOne({
+			_id: new ObjectId(params.ehrId),
+		});
+
+		if (!assistant) {
+			redirect(302, `${base}`);
+		}
+
+		return { assistant: JSON.parse(JSON.stringify(assistant)) };
+	} catch {
+		redirect(302, `${base}`);
+	}
+};
+
+async function assistantOnlyIfAuthor(locals: App.Locals, ehrId?: string) {
+	const assistant = await collections.EHR.findOne({ _id: new ObjectId(ehrId) });
 
 	if (!assistant) {
 		throw Error("Assistant not found");
@@ -30,7 +46,7 @@ export const actions: Actions = {
 	delete: async ({ params, locals }) => {
 		let assistant;
 		try {
-			assistant = await assistantOnlyIfAuthor(locals, params.assistantId);
+			assistant = await assistantOnlyIfAuthor(locals, params.ehrId);
 		} catch (e) {
 			return fail(400, { error: true, message: (e as Error).message });
 		}
@@ -40,10 +56,10 @@ export const actions: Actions = {
 		// and remove it from all users settings
 		await collections.settings.updateMany(
 			{
-				assistants: { $in: [assistant._id] },
+				ehrs: { $in: [assistant._id] },
 			},
 			{
-				$pull: { assistants: assistant._id },
+				$pull: { ehrs: assistant._id },
 			}
 		);
 
@@ -126,7 +142,7 @@ export const actions: Actions = {
 
 	subscribe: async ({ params, locals }) => {
 		const assistant = await collections.EHR.findOne({
-			_id: new ObjectId(params.assistantId),
+			_id: new ObjectId(params.ehrId),
 		});
 
 		if (!assistant) {
@@ -136,12 +152,12 @@ export const actions: Actions = {
 		// don't push if it's already there
 		const settings = await collections.settings.findOne(authCondition(locals));
 
-		if (settings?.assistants?.includes(assistant._id)) {
+		if (settings?.ehrs?.includes(assistant._id)) {
 			return fail(400, { error: true, message: "Already subscribed" });
 		}
 
 		const result = await collections.settings.updateOne(authCondition(locals), {
-			$addToSet: { assistants: assistant._id },
+			$addToSet: { ehrs: assistant._id },
 		});
 
 		// reduce count only if push succeeded
@@ -149,20 +165,20 @@ export const actions: Actions = {
 			await collections.EHR.updateOne({ _id: assistant._id }, { $inc: { userCount: 1 } });
 		}
 
-		return { from: "subscribe", ok: true, message: "Assistant added" };
+		return { from: "subscribe", ok: true, message: "EHR added" };
 	},
 
 	unsubscribe: async ({ params, locals }) => {
 		const assistant = await collections.EHR.findOne({
-			_id: new ObjectId(params.assistantId),
+			_id: new ObjectId(params.ehrId),
 		});
 
 		if (!assistant) {
-			return fail(404, { error: true, message: "Assistant not found" });
+			return fail(404, { error: true, message: "EHR not found" });
 		}
 
 		const result = await collections.settings.updateOne(authCondition(locals), {
-			$pull: { assistants: assistant._id },
+			$pull: { ehrs: assistant._id },
 		});
 
 		// reduce count only if pull succeeded
@@ -170,7 +186,7 @@ export const actions: Actions = {
 			await collections.EHR.updateOne({ _id: assistant._id }, { $inc: { userCount: -1 } });
 		}
 
-		redirect(302, `${base}/settings`);
+		redirect(302, `${base}/ehr`);
 	},
 
 	unfeature: async ({ params, locals }) => {
@@ -179,11 +195,11 @@ export const actions: Actions = {
 		}
 
 		const assistant = await collections.EHR.findOne({
-			_id: new ObjectId(params.assistantId),
+			_id: new ObjectId(params.ehrId),
 		});
 
 		if (!assistant) {
-			return fail(404, { error: true, message: "Assistant not found" });
+			return fail(404, { error: true, message: "EHR not found" });
 		}
 
 		const result = await collections.EHR.updateOne(
@@ -195,7 +211,7 @@ export const actions: Actions = {
 			return fail(500, { error: true, message: "Failed to unfeature assistant" });
 		}
 
-		return { from: "unfeature", ok: true, message: "Assistant unfeatured" };
+		return { from: "unfeature", ok: true, message: "EHR unfeatured" };
 	},
 
 	feature: async ({ params, locals }) => {
@@ -204,11 +220,11 @@ export const actions: Actions = {
 		}
 
 		const assistant = await collections.EHR.findOne({
-			_id: new ObjectId(params.assistantId),
+			_id: new ObjectId(params.ehrId),
 		});
 
 		if (!assistant) {
-			return fail(404, { error: true, message: "Assistant not found" });
+			return fail(404, { error: true, message: "EHR not found" });
 		}
 
 		const result = await collections.EHR.updateOne(
@@ -220,6 +236,6 @@ export const actions: Actions = {
 			return fail(500, { error: true, message: "Failed to feature assistant" });
 		}
 
-		return { from: "feature", ok: true, message: "Assistant featured" };
+		return { from: "feature", ok: true, message: "EHR featured" };
 	},
 };

@@ -21,7 +21,8 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 	if (
 		settings &&
 		!validateModel(models).safeParse(settings?.activeModel).success &&
-		!settings.assistants?.map((el) => el.toString())?.includes(settings?.activeModel)
+		!settings.assistants?.map((el) => el.toString())?.includes(settings?.activeModel) &&
+		!settings.ehrs?.map((el) => el.toString())?.includes(settings?.activeModel)
 	) {
 		settings.activeModel = defaultModel.id;
 		await collections.settings.updateOne(authCondition(locals), {
@@ -54,11 +55,24 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 		  )
 		: null;
 
+	const ehr = assistantActive
+		? JSON.parse(
+				JSON.stringify(
+					await collections.EHR.findOne({
+						_id: new ObjectId(settings?.activeModel),
+					})
+				)
+		  )
+		: null;
+
 	const conversations = await collections.conversations
 		.find(authCondition(locals))
 		.sort({ updatedAt: -1 })
 		.project<
-			Pick<Conversation, "title" | "model" | "_id" | "updatedAt" | "createdAt" | "assistantId">
+			Pick<
+				Conversation,
+				"title" | "model" | "_id" | "updatedAt" | "createdAt" | "assistantId" | "ehrId"
+			>
 		>({
 			title: 1,
 			model: 1,
@@ -66,19 +80,29 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 			updatedAt: 1,
 			createdAt: 1,
 			assistantId: 1,
+			ehrId: 1,
 		})
 		.limit(300)
 		.toArray();
 
 	const userAssistants = settings?.assistants?.map((assistantId) => assistantId.toString()) ?? [];
+	const userEHR = settings?.ehrs?.map((ehrId) => ehrId.toString()) ?? [];
+
 	const userAssistantsSet = new Set(userAssistants);
+	const userEHRSet = new Set(userEHR);
 
 	const assistantIds = [
 		...userAssistants.map((el) => new ObjectId(el)),
 		...(conversations.map((conv) => conv.assistantId).filter((el) => !!el) as ObjectId[]),
 	];
 
+	const ehrIds = [
+		...userEHR.map((el) => new ObjectId(el)),
+		...(conversations.map((conv) => conv.ehrId).filter((el) => !!el) as ObjectId[]),
+	];
+
 	const assistants = await collections.assistants.find({ _id: { $in: assistantIds } }).toArray();
+	const ehrs = await collections.EHR.find({ _id: { $in: ehrIds } }).toArray();
 
 	const messagesBeforeLogin = env.MESSAGES_BEFORE_LOGIN ? parseInt(env.MESSAGES_BEFORE_LOGIN) : 0;
 
@@ -145,6 +169,7 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 				avatarHash:
 					conv.assistantId &&
 					assistants.find((a) => a._id.toString() === conv.assistantId?.toString())?.avatar,
+				ehrId: conv.ehrId?.toString(),
 			};
 		}) satisfies ConvSidebar[],
 		settings: {
@@ -173,6 +198,7 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 					.filter((el) => !el.isHidden && el.isOnByDefault)
 					.map((el) => el._id.toString()),
 			disableStream: settings?.disableStream ?? DEFAULT_SETTINGS.disableStream,
+			ehrs: userEHR,
 		},
 		models: models.map((model) => ({
 			id: model.id,
@@ -228,9 +254,18 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 				createdByMe:
 					el.createdById.toString() === (locals.user?._id ?? locals.sessionId).toString(),
 			})),
+		ehrs: ehrs
+			.filter((el) => userEHRSet.has(el._id.toString()))
+			.map((el) => ({
+				...el,
+				_id: el._id.toString(),
+				createdById: undefined,
+				createdByMe:
+					el.createdById.toString() === (locals.user?._id ?? locals.sessionId).toString(),
+			})),
 		user: locals.user && {
 			id: locals.user._id.toString(),
-			username: locals.user.username,
+			username: locals.user.name,
 			avatarUrl: locals.user.avatarUrl,
 			email: locals.user.email,
 			logoutDisabled: locals.user.logoutDisabled,
@@ -238,6 +273,7 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 			isEarlyAccess: locals.user.isEarlyAccess ?? false,
 		},
 		assistant,
+		ehr,
 		enableAssistants,
 		enableAssistantsRAG: env.ENABLE_ASSISTANTS_RAG === "true",
 		enableCommunityTools: env.COMMUNITY_TOOLS === "true",

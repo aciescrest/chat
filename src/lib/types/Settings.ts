@@ -1,5 +1,6 @@
 import { defaultModel } from "$lib/server/models";
 import type { Assistant } from "./Assistant";
+import type { EHR } from "./EHR";
 import type { Timestamps } from "./Timestamps";
 import type { User } from "./User";
 
@@ -21,6 +22,7 @@ export interface Settings extends Timestamps {
 	customPrompts?: Record<string, string>;
 
 	assistants?: Assistant["_id"][];
+	ehrs?: EHR["_id"][];
 	tools?: string[];
 	disableStream: boolean;
 }
@@ -35,4 +37,5 @@ export const DEFAULT_SETTINGS = {
 	assistants: [],
 	tools: [],
 	disableStream: false,
+	ehrs: [],
 } satisfies SettingsEditable;
