@@ -55,28 +55,43 @@ const newAsssistantSchema = z.object({
 				.map((el) => el._id.toString()),
 		])
 		.optional(),
-
-	// Simplified and made optional
 	// New fields:
 	age: z.coerce.number().int().positive(),
 	gender: z.string().min(1),
 	phoneNumber: z.string().min(1),
 	address: z.string().min(1),
-	medicalHistory: z.string().min(1),
-	medicationList: z.string().min(1),
-	vitalSigns: z.string().min(1),
-	labTestResults: z.string().min(1),
+	medicalHistory: z.string().optional(),
+	medicationList: z.string().optional(),
+	vitalSigns: z.string().optional(),
+	labTestResults: z.string().optional(),
 	medicalNotes: z.preprocess(
 		(arg) => {
 			try {
 				const parsed = JSON.parse(arg as string);
-
-				// Convert to a true array using Array.from
-				const validatedNotes = Array.from(
-					parsed.map(() => {
-						/* ... your validation logic ... */
+				const validatedNotes = parsed
+					.map((item: { visitDate: string | number | Date; note: string } | null) => {
+						if (
+							typeof item === "object" &&
+							item !== null &&
+							"note" in item &&
+							"visitDate" in item
+						) {
+							try {
+								const visitDate = new Date(item.visitDate);
+								if (isNaN(visitDate.getTime())) {
+									return undefined;
+								}
+								return {
+									note: String(item.note),
+									visitDate: visitDate.toISOString(),
+								};
+							} catch (e) {
+								return undefined;
+							}
+						}
+						return undefined;
 					})
-				).filter((item) => item !== undefined);
+					.filter((item: undefined) => item !== undefined);
 
 				return validatedNotes;
 			} catch (error) {
@@ -91,7 +106,7 @@ const newAsssistantSchema = z.object({
 					visitDate: z.string().datetime(),
 				})
 			)
-			.optional()
+			.default([]) // Use .default([]) instead of .optional()
 	),
 });
 
@@ -175,9 +190,6 @@ export const actions: Actions = {
 			hash = await uploadAvatar(new File([image], "avatar.jpg"), newAssistantId);
 		}
 
-		console.log(parse.data.medicalNotes);
-		console.log(parse.data.medicalNotes);
-
 		const { insertedId } = await collections.EHR.insertOne({
 			_id: newAssistantId,
 			createdById,
@@ -213,7 +225,7 @@ export const actions: Actions = {
 			medicationList: parse.data.medicationList,
 			vitalSigns: parse.data.vitalSigns,
 			labTestResults: parse.data.labTestResults,
-			medicalNotes: parse.data.medicalNotes || [],
+			medicalNotes: parse.data.medicalNotes,
 		});
 
 		// add insertedId to user settings

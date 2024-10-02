@@ -16,7 +16,7 @@ export interface EHR extends Timestamps {
 	medicationList?: string;
 	vitalSigns?: string;
 	labTestResults?: string;
-	medicalNotes?: { note: string; visitDate: string }[];
+	medicalNotes?: { note: string; visitDate: string | Date }[];
 
 	description?: string;
 	modelId: string;

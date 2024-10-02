@@ -68,13 +68,30 @@ const newAsssistantSchema = z.object({
 		(arg) => {
 			try {
 				const parsed = JSON.parse(arg as string);
-
-				// Convert to a true array using Array.from
-				const validatedNotes = Array.from(
-					parsed.map(() => {
-						/* ... your validation logic ... */
+				const validatedNotes = parsed
+					.map((item: { visitDate: string | number | Date; note: string } | null) => {
+						if (
+							typeof item === "object" &&
+							item !== null &&
+							"note" in item &&
+							"visitDate" in item
+						) {
+							try {
+								const visitDate = new Date(item.visitDate);
+								if (isNaN(visitDate.getTime())) {
+									return undefined;
+								}
+								return {
+									note: String(item.note),
+									visitDate: visitDate.toISOString(),
+								};
+							} catch (e) {
+								return undefined;
+							}
+						}
+						return undefined;
 					})
-				).filter((item) => item !== undefined);
+					.filter((item: undefined) => item !== undefined);
 
 				return validatedNotes;
 			} catch (error) {
@@ -89,7 +106,7 @@ const newAsssistantSchema = z.object({
 					visitDate: z.string().datetime(),
 				})
 			)
-			.optional()
+			.default([]) // Use .default([]) instead of .optional()
 	),
 });
 
@@ -241,7 +258,7 @@ export const actions: Actions = {
 					medicationList: parse.data.medicationList,
 					vitalSigns: parse.data.vitalSigns,
 					labTestResults: parse.data.labTestResults,
-					medicalNotes: parse.data.medicalNotes || [],
+					medicalNotes: parse.data.medicalNotes,
 				},
 			}
 		);

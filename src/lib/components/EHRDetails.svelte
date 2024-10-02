@@ -36,6 +36,9 @@
 		| "tools"
 		| "featured"
 		| "address"
+		| "age"
+		| "gender"
+		| "phoneNumber"
 		| "medicalHistory"
 		| "medicalNotes"
 		| "vitalSigns"
@@ -61,7 +64,7 @@
 	const settings = useSettingsStore();
 </script>
 
-<div class="scrollbar-custom mr-1 h-full overflow-y-auto py-12 max-sm:pt-8 md:py-24 pl-5 pr-5">
+<div class="scrollbar-custom mr-1 h-full overflow-y-auto py-12 pl-5 pr-5 max-sm:pt-8 md:py-24">
 	<div
 		class="relative mt-auto rounded-2xl bg-gray-100 text-gray-600 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-300"
 	>
@@ -85,7 +88,7 @@
 			{/if}
 
 			<div class="text-balance flex h-full flex-col gap-2">
-				<p class="-mb-1">Assistant</p>
+				<p class="-mb-1">Patient</p>
 
 				<p class="text-xl font-bold sm:text-2xl">{assistant.name}</p>
 				{#if assistant.description}
@@ -183,14 +186,20 @@
 				<div
 					class="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
 				>
-					Demographics
+					Patient Demographics
 				</div>
 			</div>
 			<dt class="flex items-center gap-2 font-semibold">
-				{assistant?.name}
+				Age: {assistant?.name}
 			</dt>
 			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
-				{assistant?.address || "-"}
+				Address: {assistant?.address}
+			</dd>
+			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
+				Gender: {assistant?.gender}
+			</dd>
+			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
+				Phone Number: {assistant?.phoneNumber}
 			</dd>
 		</div>
 
@@ -201,14 +210,14 @@
 				<div
 					class="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
 				>
-					Demographics
+					Medical History
 				</div>
 			</div>
-			<dt class="flex items-center gap-2 font-semibold">
-				{assistant.name}
-			</dt>
+			<!-- <dt class="flex items-center gap-2 font-semibold">
+				{assistant?.medicalHistory}
+			</dt> -->
 			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
-				{assistant?.description || "-"}
+				{assistant?.medicalHistory}
 			</dd>
 		</div>
 
@@ -219,14 +228,14 @@
 				<div
 					class="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
 				>
-					Demographics
+					Medication List
 				</div>
 			</div>
-			<dt class="flex items-center gap-2 font-semibold">
-				{assistant.name}
-			</dt>
+			<!-- <dt class="flex items-center gap-2 font-semibold">
+				{assistant?.medicalHistory}
+			</dt> -->
 			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
-				{assistant?.description || "-"}
+				{assistant?.medicationList}
 			</dd>
 		</div>
 
@@ -237,21 +246,64 @@
 				<div
 					class="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
 				>
-					Demographics
+					Vital Signs
 				</div>
 			</div>
-			<dt class="flex items-center gap-2 font-semibold">
-				{assistant.name}
-			</dt>
+			<!-- <dt class="flex items-center gap-2 font-semibold">
+				{assistant?.medicalHistory}
+			</dt> -->
 			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
-				{assistant?.description || "-"}
+				{assistant?.medicalHistory}
 			</dd>
+		</div>
+
+		<div
+			class="relative flex flex-col gap-2 overflow-hidden rounded-xl border bg-gray-50/50 px-6 py-5 shadow hover:bg-gray-50 hover:shadow-inner dark:border-gray-800/70 dark:bg-gray-950/20 dark:hover:bg-gray-950/40"
+		>
+			<div class="flex items-center justify-between gap-1">
+				<div
+					class="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
+				>
+					Laboratory Test Results
+				</div>
+			</div>
+			<!-- <dt class="flex items-center gap-2 font-semibold">
+				{assistant?.medicalHistory}
+			</dt> -->
+			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
+				{assistant?.labTestResults}
+			</dd>
+		</div>
+
+		<div
+			class="relative flex flex-col gap-2 overflow-hidden rounded-xl border bg-gray-50/50 px-6 py-5 shadow hover:bg-gray-50 hover:shadow-inner dark:border-gray-800/70 dark:bg-gray-950/20 dark:hover:bg-gray-950/40"
+		>
+			<div class="flex items-center justify-between gap-1">
+				<div
+					class="rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
+				>
+					Medical Notes and Visits
+				</div>
+			</div>
+			<!-- <dt class="flex items-center gap-2 font-semibold">
+				{assistant?.medicalHistory}
+			</dt> -->
+			{#if assistant?.medicalNotes}
+				{#each assistant.medicalNotes as { note, visitDate }}
+					<div class="mb-2 rounded-lg border p-2">
+						<p class="mb-1 font-medium">
+							{new Date(visitDate).toLocaleString()}
+						</p>
+						<p>{note}</p>
+					</div>
+				{/each}
+			{/if}
 		</div>
 	</dl>
 
 	{#if $settings.ehrs.includes(assistant._id.toString())}
 		<button
-			class=" w-full rounded-full bg-black px-4 py-3 font-semibold text-white"
+			class=" rounded-full bg-black px-4 py-3 font-semibold text-white"
 			on:click={() => {
 				if ($page.data.settings.ehrs.includes(assistant._id.toString())) {
 					settings.instantSet({ activeModel: assistant._id.toString() });
@@ -265,7 +317,7 @@
 		</button>
 	{/if}
 
-	{#if !$page.data.settings.ehrs.includes(assistant._id.toString())}
+	{#if !$settings.ehrs.includes(assistant._id.toString())}
 		<form
 			method="POST"
 			action="{base}/ehr/{$page.data.assistant._id}?/subscribe"
@@ -284,7 +336,7 @@
 		>
 			<button
 				type="submit"
-				class=" w-full rounded-full bg-black px-4 py-3 font-semibold text-white"
+				class=" rounded-full bg-black px-4 py-3 font-semibold text-white"
 			>
 				Start chatting
 			</button>

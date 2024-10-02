@@ -45,10 +45,9 @@
 	let dynamicPrompt = assistant?.dynamicPrompt ?? false;
 	let showModelSettings = Object.values(assistant?.generateSettings ?? {}).some((v) => !!v);
 
-	let medicalNotes: { note: string; visitDate: string }[] = assistant?.medicalNotes || [];
+	let medicalNotes: { note: string; visitDate: string | Date }[] = assistant?.medicalNotes || [];
 	let newNote = "";
-	let newVisitDate = "";
-	let medicalNotesInput: HTMLInputElement | null = null; // Store input element
+	let newVisitDate: Date = new Date(); // Initialize with current date and time
 
 	let compress: typeof readAndCompressImage | null = null;
 
@@ -57,12 +56,6 @@
 		compress = module.readAndCompressImage;
 
 		modelId = findCurrentModel(models, assistant ? assistant.modelId : $settings.activeModel).id;
-
-		medicalNotesInput = document.querySelector('input[name="medicalNotes"]') as HTMLInputElement;
-		//Set initial values on client-side if available
-		if (medicalNotesInput) {
-			medicalNotesInput.value = JSON.stringify(medicalNotes);
-		}
 	});
 
 	let inputMessage1 = assistant?.exampleInputs[0] ?? "";
@@ -116,22 +109,17 @@
 	$: selectedModel = models.find((m) => m.id === modelId);
 
 	function addMedicalNote() {
-		if (newNote && newVisitDate) {
+		if (newNote) {
+			// Only check if newNote has content. Visit date is always set.
+
 			medicalNotes = [...medicalNotes, { note: newNote, visitDate: newVisitDate }];
 			newNote = "";
-			newVisitDate = "";
+			newVisitDate = new Date(); // Reset to current date/time after adding
 		}
 	}
 
 	function removeMedicalNote(index: number) {
 		medicalNotes = medicalNotes.filter((_, i) => i !== index);
-	}
-
-	$: {
-		if (medicalNotesInput) {
-			// Only update if input element exists
-			medicalNotesInput.value = JSON.stringify(medicalNotes);
-		}
 	}
 </script>
 
@@ -183,8 +171,18 @@
 			formData.set("ragLinkList", "");
 		}
 
+		if (newNote) {
+			// Only check if newNote has content. Visit date is always set.
+
+			medicalNotes = [...medicalNotes, { note: newNote, visitDate: newVisitDate }];
+			newNote = "";
+			newVisitDate = new Date(); // Reset to current date/time after adding
+		}
+
 		formData.set("tools", tools.join(","));
 		formData.set("medicalNotes", JSON.stringify(medicalNotes));
+
+		
 
 		return async ({ result }) => {
 			loading = false;
@@ -303,8 +301,8 @@
 							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
 							value={assistant?.gender}
 						>
-							<option value="male">Male</option>
-							<option value="female">Female</option>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
 							<p class="text-xs text-red-500">{getError("gender", form)}</p>
 						</select>
 					</div>
@@ -376,45 +374,38 @@
 			</label>
 
 			<label>
-				<div class="mb-1 font-semibold">Medical Visits</div>
-				<input type="hidden" name="medicalNotes" bind:this={medicalNotesInput} />
+				<div class="mb-4">
+					<div class="mb-2 block font-semibold">Medical Notes and Visits</div>
+					<input type="hidden" name="medicalNotes" value={JSON.stringify(medicalNotes)} />
 
-				{#each medicalNotes as { note, visitDate }, index}
-					<div class="mb-2 flex flex-col rounded-lg border p-2">
-						<div class="mb-1 flex items-center justify-between">
-							<Flatpickr
-								bind:value={visitDate}
-								options={{ enableTime: true, dateFormat: "Y-m-d H:i" }}
-								class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
-							/>
-							<button
-								type="button"
-								on:click={() => removeMedicalNote(index)}
-								class="text-red-500 hover:text-red-700">X</button
-							>
+					{#each medicalNotes as { note, visitDate }, index}
+						<div class="mb-2 flex flex-col rounded-lg border p-2">
+							<div class="mb-1 flex items-center justify-between">
+								<p class="font-medium">{visitDate.toLocaleString()}</p>
+								<button
+									type="button"
+									on:click={() => removeMedicalNote(index)}
+									class="text-red-500 hover:text-red-700">-</button
+								>
+							</div>
+							<p>{note}</p>
 						</div>
-						<textarea
-							bind:value={note}
-							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
-						/>
-					</div>
-				{/each}
+					{/each}
 
-				<div class="mb-2 flex flex-col rounded-lg border p-2">
-					<div class="mb-1 flex items-center justify-between">
+					<div class="rounded-lg border p-2">
 						<Flatpickr
 							bind:value={newVisitDate}
 							options={{ enableTime: true, dateFormat: "Y-m-d H:i" }}
-							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
+							class="mb-2 bg-transparent"
 						/>
+						<textarea
+							bind:value={newNote}
+							placeholder="Add new note"
+							class="mb-2 w-full rounded border bg-transparent p-2"
+						/>
+						<button type="button" class="btn" on:click={addMedicalNote}>Add Note</button>
 					</div>
-					<textarea
-						bind:value={newNote}
-						placeholder="Add new note"
-						class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
-					/>
 				</div>
-				<button type="button" on:click={addMedicalNote} class="btn">Add Note</button>
 			</label>
 
 			<label>
