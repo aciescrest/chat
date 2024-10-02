@@ -292,6 +292,8 @@
 
 					{$page.data.ehr.name}
 				</a>
+			{:else if preprompt && preprompt != currentModel.preprompt}
+				<SystemPromptModal preprompt={JSON.stringify(ehr) ?? ""} />
 			{/if}
 
 			{#if messages.length > 0}

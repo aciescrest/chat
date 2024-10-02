@@ -285,7 +285,7 @@
 
 					{#if assistant.avatar}
 						<img
-							src="{base}/settings/assistants/{assistant._id}/avatar.jpg"
+							src="{base}/ehr/{assistant._id}/avatar.jpg"
 							alt="Avatar"
 							class="mb-2 aspect-square size-12 flex-none rounded-full object-cover sm:mb-6 sm:size-20"
 						/>

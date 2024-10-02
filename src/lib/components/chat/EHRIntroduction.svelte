@@ -62,7 +62,7 @@
 		>
 			{#if ehr.avatar}
 				<img
-					src={`${base}/settings/ehr/${ehr._id.toString()}/avatar.jpg?hash=${
+					src={`${base}/ehr/${ehr._id.toString()}/avatar.jpg?hash=${
 						ehr.avatar
 					}`}
 					alt="avatar"
@@ -108,7 +108,7 @@
 				{#if ehr.createdByName}
 					<p class="pt-1 text-sm text-gray-400 dark:text-gray-500">
 						Created by
-						<a class="hover:underline" href="{base}/assistants?user={ehr.createdByName}">
+						<a class="hover:underline" href="{base}/ehr?user={ehr.createdByName}">
 							{ehr.createdByName}
 						</a>
 						{#if ehr.userCount && ehr.userCount > 1}

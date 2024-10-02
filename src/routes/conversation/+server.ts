@@ -22,6 +22,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			fromShare: z.string().optional(),
 			model: validateModel(models),
 			assistantId: z.string().optional(),
+			ehrId: z.string().optional(),
 			preprompt: z.string().optional(),
 		})
 		.safeParse(JSON.parse(body));
@@ -73,6 +74,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		values.model = conversation.model;
 		values.preprompt = conversation.preprompt;
 		values.assistantId = conversation.assistantId?.toString();
+		values.ehrId = conversation.ehrId?.toString();
 		embeddingModel = conversation.embeddingModel;
 	}
 
@@ -87,8 +89,14 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		_id: new ObjectId(values.assistantId),
 	});
 
+	const ehr = await collections.EHR.findOne({
+		_id: new ObjectId(values.ehrId),
+	});
+
 	if (assistant) {
 		values.preprompt = assistant.preprompt;
+	} else if (ehr) {
+		values.preprompt = JSON.stringify(ehr);
 	} else {
 		values.preprompt ??= model?.preprompt ?? "";
 	}
@@ -105,6 +113,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		model: values.model,
 		preprompt: values.preprompt,
 		assistantId: values.assistantId ? new ObjectId(values.assistantId) : undefined,
+		ehrId: values.ehrId ? new ObjectId(values.ehrId) : undefined,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		userAgent: request.headers.get("User-Agent") ?? undefined,

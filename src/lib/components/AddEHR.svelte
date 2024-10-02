@@ -229,7 +229,7 @@
 							/>
 						{:else if assistant?.avatar}
 							<img
-								src="{base}/settings/assistants/{assistant._id}/avatar.jpg?hash={assistant.avatar}"
+								src="{base}/ehr/{assistant._id}/avatar.jpg?hash={assistant.avatar}"
 								alt="avatar"
 								class="crop mx-auto h-12 w-12 cursor-pointer rounded-full object-cover"
 							/>
