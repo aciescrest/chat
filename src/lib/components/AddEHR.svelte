@@ -48,7 +48,7 @@
 	let medicalNotes: { note: string; visitDate: string }[] = assistant?.medicalNotes || [];
 	let newNote = "";
 	let newVisitDate = "";
-    let medicalNotesInput: HTMLInputElement | null = null; // Store input element
+	let medicalNotesInput: HTMLInputElement | null = null; // Store input element
 
 	let compress: typeof readAndCompressImage | null = null;
 
@@ -60,8 +60,8 @@
 
 		medicalNotesInput = document.querySelector('input[name="medicalNotes"]') as HTMLInputElement;
 		//Set initial values on client-side if available
-		if(medicalNotesInput){
-			medicalNotesInput.value = JSON.stringify(medicalNotes)
+		if (medicalNotesInput) {
+			medicalNotesInput.value = JSON.stringify(medicalNotes);
 		}
 	});
 
@@ -115,7 +115,6 @@
 	$: templateVariables = [...systemPrompt.matchAll(regex)].map((match) => match[1]);
 	$: selectedModel = models.find((m) => m.id === modelId);
 
-	
 	function addMedicalNote() {
 		if (newNote && newVisitDate) {
 			medicalNotes = [...medicalNotes, { note: newNote, visitDate: newVisitDate }];
@@ -129,10 +128,11 @@
 	}
 
 	$: {
-        if (medicalNotesInput) { // Only update if input element exists
-            medicalNotesInput.value = JSON.stringify(medicalNotes);
-        }
-    }
+		if (medicalNotesInput) {
+			// Only update if input element exists
+			medicalNotesInput.value = JSON.stringify(medicalNotes);
+		}
+	}
 </script>
 
 <form
@@ -288,19 +288,20 @@
 					<div>
 						<div class="mb-1">Age</div>
 						<input
+							type="number"
 							name="age"
 							placeholder=""
-							value={assistant?.demographics?.age ?? ""}
+							value={assistant?.age}
 							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
 						/>
-						<p class="text-xs text-red-500">{getError("name", form)}</p>
+						<p class="text-xs text-red-500">{getError("age", form)}</p>
 					</div>
 					<div>
 						<div class="mb-1">Gender</div>
 						<select
 							name="gender"
 							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
-							value={assistant?.demographics?.gender}
+							value={assistant?.gender}
 						>
 							<option value="male">Male</option>
 							<option value="female">Female</option>
@@ -312,7 +313,7 @@
 						<input
 							name="phoneNumber"
 							placeholder=""
-							value={assistant?.demographics?.phoneNumber ?? ""}
+							value={assistant?.phoneNumber ?? ""}
 							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
 						/>
 						<p class="text-xs text-red-500">{getError("phoneNumber", form)}</p>
@@ -322,7 +323,7 @@
 						<input
 							name="address"
 							placeholder=" "
-							value={assistant?.demographics?.address ?? ""}
+							value={assistant?.address ?? ""}
 							class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
 						/>
 						<p class="text-xs text-red-500">{getError("address", form)}</p>
@@ -338,7 +339,7 @@
 					placeholder=""
 					value={assistant?.medicalHistory ?? ""}
 				/>
-				<p class="text-xs text-red-500">{getError("medicalHistory", form)}</p>
+				<!-- <p class="text-xs text-red-500">{getError("medicalHistory", form)}</p> -->
 			</label>
 
 			<label>
@@ -349,7 +350,7 @@
 					placeholder=" "
 					value={assistant?.medicationList ?? ""}
 				/>
-				<p class="text-xs text-red-500">{getError("medicationList", form)}</p>
+				<!-- <p class="text-xs text-red-500">{getError("medicationList", form)}</p> -->
 			</label>
 
 			<label>
@@ -360,7 +361,7 @@
 					placeholder=" "
 					value={assistant?.vitalSigns ?? ""}
 				/>
-				<p class="text-xs text-red-500">{getError("vitalSigns", form)}</p>
+				<!-- <p class="text-xs text-red-500">{getError("vitalSigns", form)}</p> -->
 			</label>
 
 			<label>
@@ -371,7 +372,7 @@
 					placeholder=" "
 					value={assistant?.labTestResults ?? ""}
 				/>
-				<p class="text-xs text-red-500">{getError("labTestResults", form)}</p>
+				<!-- <p class="text-xs text-red-500">{getError("labTestResults", form)}</p> -->
 			</label>
 
 			<label>

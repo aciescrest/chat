@@ -8,17 +8,15 @@ export interface EHR extends Timestamps {
 	createdByName?: User["username"];
 	avatar?: string;
 	name: string;
-	demographics: {
-		age: number | string;
-		gender: string;
-		phoneNumber: string;
-		address: string;
-	};
-	medicalHistory: string;
-	medicationList: string;
-	vitalSigns: string;
-	labTestResults: string;
-	medicalNotes: { note: string; visitDate: string }[];
+	age: number;
+	gender: string;
+	phoneNumber: string;
+	address: string;
+	medicalHistory?: string;
+	medicationList?: string;
+	vitalSigns?: string;
+	labTestResults?: string;
+	medicalNotes?: { note: string; visitDate: string }[];
 
 	description?: string;
 	modelId: string;

@@ -35,7 +35,7 @@
 		| "userCount"
 		| "tools"
 		| "featured"
-		| "demographics"
+		| "address"
 		| "medicalHistory"
 		| "medicalNotes"
 		| "vitalSigns"
@@ -187,10 +187,10 @@
 				</div>
 			</div>
 			<dt class="flex items-center gap-2 font-semibold">
-				{assistant?.medicalHistory}
+				{assistant?.name}
 			</dt>
 			<dd class="whitespace-pre-wrap text-sm text-gray-500 dark:text-gray-400">
-				{assistant.demographics?.address || "-"}
+				{assistant?.address || "-"}
 			</dd>
 		</div>
 

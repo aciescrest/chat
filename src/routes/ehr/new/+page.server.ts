@@ -58,12 +58,10 @@ const newAsssistantSchema = z.object({
 
 	// Simplified and made optional
 	// New fields:
-	demographics: z.object({
-		age: z.coerce.number().int().positive(),
-		gender: z.string().min(1),
-		phoneNumber: z.string().min(1),
-		address: z.string().min(1),
-	}),
+	age: z.coerce.number().int().positive(),
+	gender: z.string().min(1),
+	phoneNumber: z.string().min(1),
+	address: z.string().min(1),
 	medicalHistory: z.string().min(1),
 	medicationList: z.string().min(1),
 	vitalSigns: z.string().min(1),
@@ -177,6 +175,9 @@ export const actions: Actions = {
 			hash = await uploadAvatar(new File([image], "avatar.jpg"), newAssistantId);
 		}
 
+		console.log(parse.data.medicalNotes);
+		console.log(parse.data.medicalNotes);
+
 		const { insertedId } = await collections.EHR.insertOne({
 			_id: newAssistantId,
 			createdById,
@@ -204,12 +205,10 @@ export const actions: Actions = {
 				top_k: parse.data.top_k,
 			},
 
-			demographics: {
-				age: parse.data.demographics.age,
-				gender: parse.data.demographics.gender,
-				phoneNumber: parse.data.demographics.phoneNumber,
-				address: parse.data.demographics.address,
-			},
+			age: parse.data.age,
+			gender: parse.data.gender,
+			phoneNumber: parse.data.phoneNumber,
+			address: parse.data.address,
 			medicalHistory: parse.data.medicalHistory,
 			medicationList: parse.data.medicationList,
 			vitalSigns: parse.data.vitalSigns,

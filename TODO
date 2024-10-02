@@ -21,3 +21,7 @@ Include start messages --  for probable patient conditions
 TODO
 Add tooltips to EHR forms
 Add time component to EHR information
+Add GCP Models
+Structure prompts to include the whole EHR document
+Reachh out to professionals
+Payment function
