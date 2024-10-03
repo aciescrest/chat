@@ -10,6 +10,7 @@
 	import IconInternet from "../icons/IconInternet.svelte";
 	import CarbonExport from "~icons/carbon/export";
 	import CarbonCheckmark from "~icons/carbon/checkmark";
+	import CarbonPen from "~icons/carbon/pen";
 	import CarbonRenew from "~icons/carbon/renew";
 	import CarbonUserMultiple from "~icons/carbon/user-multiple";
 	import CarbonTools from "~icons/carbon/tools";
@@ -77,7 +78,7 @@
 			{/if}
 
 			<div class="flex h-full flex-col gap-2 text-balance">
-				<p class="-mb-1">Electronic Health Record</p>
+				<p class="-mb-1 pt-5">Patient Health Record</p>
 
 				<p class="text-xl font-bold sm:text-2xl">{ehr.name}</p>
 				{#if ehr.description}
@@ -95,7 +96,7 @@
 						Has tools
 					</div>
 				{/if}
-				{#if hasRag}
+				<!-- {#if hasRag}
 					<div
 						class="flex h-5 w-fit items-center gap-1 rounded-full bg-blue-500/10 pl-1 pr-2 text-xs"
 						title="This assistant uses the websearch."
@@ -103,7 +104,7 @@
 						<IconInternet classNames="text-sm text-blue-600" />
 						Has internet access
 					</div>
-				{/if}
+				{/if} -->
 
 				{#if ehr.createdByName}
 					<p class="pt-1 text-sm text-gray-400 dark:text-gray-500">
@@ -127,7 +128,7 @@
 
 		<div class="absolute right-3 top-3 md:right-4 md:top-4">
 			<div class="flex flex-row items-center gap-1">
-				<button
+				<!-- <button
 					class="flex h-7 items-center gap-1.5 rounded-full border bg-white px-2.5 py-1 text-gray-800 shadow-sm hover:shadow-inner dark:border-gray-700 dark:bg-gray-700 dark:text-gray-300/90 dark:hover:bg-gray-800 max-sm:px-1.5 md:text-sm"
 					on:click={() => {
 						if (!isCopied) {
@@ -146,11 +147,16 @@
 						<CarbonExport class="text-xxs max-sm:text-xs" />
 						<span class="max-sm:hidden"> Share </span>
 					{/if}
-				</button>
+				</button> -->
 				<a
-					href="{base}/settings/assistants/{ehr._id.toString()}"
+					href="{base}/ehr/{ehr._id.toString()}/edit"
 					class="flex h-7 items-center gap-1.5 rounded-full border bg-white px-2.5 py-1 text-gray-800 shadow-sm hover:shadow-inner dark:border-gray-700 dark:bg-gray-700 dark:text-gray-300/90 dark:hover:bg-gray-800 md:text-sm"
-					><IconGear class="text-xxs" />Settings</a
+					><CarbonUserMultiple class="mr-1.5 inline text-xs" />View</a
+				>
+				<a
+					href="{base}/ehr/{ehr._id.toString()}/edit"
+					class="flex h-7 items-center gap-1.5 rounded-full border bg-white px-2.5 py-1 text-gray-800 shadow-sm hover:shadow-inner dark:border-gray-700 dark:bg-gray-700 dark:text-gray-300/90 dark:hover:bg-gray-800 md:text-sm"
+					><CarbonPen class="text-xxs" />Edit</a
 				>
 			</div>
 		</div>
@@ -163,7 +169,7 @@
 			}}
 			class="absolute -bottom-6 right-2 inline-flex items-center justify-center text-xs text-gray-600 underline hover:brightness-50 dark:text-gray-400 dark:hover:brightness-110"
 		>
-			<CarbonRenew class="mr-1.5 text-xxs" /> Reset to default model
+			<CarbonRenew class="mr-1.5 text-xxs" /> Reset to default chat
 		</button>
 	</div>
 	{#if ehr.exampleInputs}

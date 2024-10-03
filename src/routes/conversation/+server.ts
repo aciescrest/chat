@@ -96,7 +96,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	if (assistant) {
 		values.preprompt = assistant.preprompt;
 	} else if (ehr) {
-		values.preprompt = JSON.stringify(ehr);
+		values.preprompt =
+			"This is a patient health record and you are to deliver assessment and analysis from the information and conditions provided to a clinical practitioner. " +
+			JSON.stringify(ehr);
 	} else {
 		values.preprompt ??= model?.preprompt ?? "";
 	}

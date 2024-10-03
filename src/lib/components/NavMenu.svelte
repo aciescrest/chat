@@ -116,7 +116,13 @@
 	>
 		Theme
 	</button>
-	{#if nModels > 1}
+	<a
+		href="{base}/ehr"
+		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+	>
+		Electronic Health Reports
+	</a>
+	<!-- {#if nModels > 1}
 		<a
 			href="{base}/models"
 			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
@@ -127,7 +133,7 @@
 				>{nModels}</span
 			>
 		</a>
-	{/if}
+	{/if} -->
 	{#if $page.data.enableAssistants}
 		<a
 			href="{base}/assistants"
@@ -136,7 +142,7 @@
 			Assistants
 		</a>
 	{/if}
-	{#if $page.data.enableCommunityTools}
+	<!-- {#if $page.data.enableCommunityTools}
 		<a
 			href="{base}/tools"
 			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
@@ -147,20 +153,15 @@
 				>New</span
 			>
 		</a>
-	{/if}
+	{/if} -->
 
-	<a
+	<!-- <a
 		href="{base}/settings"
 		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 	>
 		Settings
-	</a>
-	<a
-		href="{base}/ehr"
-		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
-	>
-		Electronic Health Reports
-	</a>
+	</a> -->
+	
 	
 	<a
 		href="{base}/privacy"

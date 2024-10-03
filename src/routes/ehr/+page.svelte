@@ -131,9 +131,9 @@
 				</a>
 			{/if}
 		</div>
-		<h3 class="text-gray-500">Popular assistants made by the community</h3>
+		<h3 class="text-gray-500">Manage Your Health Records</h3>
 		<div class="mt-6 flex justify-between gap-2 max-sm:flex-col sm:items-center">
-			<select
+			<!-- <select
 				class="mt-1 h-[34px] rounded-lg border border-gray-300 bg-gray-50 px-2 text-sm text-gray-900 focus:border-blue-700 focus:ring-blue-700 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
 				bind:value={data.selectedModel}
 				on:change={onModelChange}
@@ -142,7 +142,7 @@
 				{#each data.models.filter((model) => !model.unlisted) as model}
 					<option value={model.name}>{model.name}</option>
 				{/each}
-			</select>
+			</select> -->
 			{#if data.user?.isAdmin}
 				<label class="mr-auto flex items-center gap-1 text-red-500" title="Admin only feature">
 					<input type="checkbox" checked={showUnfeatured} on:change={toggleShowUnfeatured} />
@@ -184,7 +184,7 @@
 					>
 				{/if}
 			{:else}
-				<a
+				<!-- <a
 					href={getHref($page.url, {
 						existingKeys: { behaviour: "delete", keys: ["user", "modelId", "p", "q"] },
 					})}
@@ -195,8 +195,8 @@
 				>
 					<CarbonEarthAmerica class="text-xs" />
 					Community
-				</a>
-				{#if data.user?.username}
+				</a> -->
+				<!-- {#if data.user?.username}
 					<a
 						href={getHref($page.url, {
 							newKeys: { user: data.user.username },
@@ -209,7 +209,7 @@
 							: 'border-transparent text-gray-400 hover:text-gray-800 dark:hover:text-gray-300'}"
 						>{data.user.username}
 					</a>
-				{/if}
+				{/if} -->
 			{/if}
 			<div
 				class="relative ml-auto flex h-[30px] w-40 items-center rounded-full border px-2 has-[:focus]:border-gray-400 dark:border-gray-600 sm:w-64"
@@ -225,14 +225,14 @@
 					type="search"
 				/>
 			</div>
-			<select
+			<!-- <select
 				bind:value={sortValue}
 				on:change={sortAssistants}
 				class="rounded-lg border border-gray-300 bg-gray-50 px-2 py-1 text-sm text-gray-900 focus:border-blue-700 focus:ring-blue-700 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
 			>
 				<option value={SortKey.TRENDING}>{SortKey.TRENDING}</option>
 				<option value={SortKey.POPULAR}>{SortKey.POPULAR}</option>
-			</select>
+			</select> -->
 		</div>
 
 		<div class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
@@ -302,7 +302,7 @@
 						{assistant.name}
 					</h3>
 					<p class="line-clamp-4 text-xs text-gray-700 dark:text-gray-400 sm:line-clamp-2">
-						{assistant.description}
+						{assistant.age} years
 					</p>
 					{#if assistant.createdByName}
 						<p class="mt-auto pt-2 text-xs text-gray-400 dark:text-gray-500">
@@ -316,7 +316,7 @@
 					{/if}
 				</button>
 			{:else}
-				No assistants found
+				No records found
 			{/each}
 		</div>
 		<Pagination

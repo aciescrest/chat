@@ -58,8 +58,8 @@
 		modelId = findCurrentModel(models, assistant ? assistant.modelId : $settings.activeModel).id;
 	});
 
-	let inputMessage1 = assistant?.exampleInputs[0] ?? "";
-	let inputMessage2 = assistant?.exampleInputs[1] ?? "";
+	let inputMessage1 = assistant?.exampleInputs[0] ?? "What is the ideal treatment plan?";
+	let inputMessage2 = assistant?.exampleInputs[1] ?? "What is the diagnosis";
 	let inputMessage3 = assistant?.exampleInputs[2] ?? "";
 	let inputMessage4 = assistant?.exampleInputs[3] ?? "";
 
@@ -182,8 +182,6 @@
 		formData.set("tools", tools.join(","));
 		formData.set("medicalNotes", JSON.stringify(medicalNotes));
 
-		
-
 		return async ({ result }) => {
 			loading = false;
 			await applyAction(result);
@@ -192,16 +190,14 @@
 >
 	{#if assistant}
 		<h2 class="text-xl font-semibold">
-			Edit EHR: {assistant?.name ?? "assistant"}
+			Edit record: {assistant?.name ?? "assistant"}
 		</h2>
-		<p class="mb-6 text-sm text-gray-500">
-			Modifying an existing assistant will propagate the changes to all users.
-		</p>
+		<p class="mb-6 text-sm text-gray-500">Modify and Manage Existing EHR Information.</p>
 	{:else}
-		<h2 class="text-xl font-semibold">Create new assistant</h2>
+		<h2 class="text-xl font-semibold">Create new record</h2>
 		<p class="mb-6 text-sm text-gray-500">
-			Create and share your own AI Assistant. All assistants are <span
-				class="rounded-full border px-2 py-0.5 leading-none">public</span
+			Create a new medical record for a patient <span
+				class="rounded-full border px-2 py-0.5 leading-none">private</span
 			>
 		</p>
 	{/if}
@@ -409,11 +405,23 @@
 			</label>
 
 			<label>
-				<div class="mb-1 font-semibold">Model</div>
+				<div class="mb-1 flex justify-between font-semibold">
+					<span class="m-1 ml-0 flex items-center gap-1.5 whitespace-nowrap text-sm">
+						Model
+
+						<HoverTooltip
+							label="The AI model that will be used when analyzing the patient record. Choose this according to preference."
+						>
+							<CarbonHelpFilled
+								class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
+							/>
+						</HoverTooltip>
+					</span>
+				</div>
 				<div class="flex gap-2">
 					<select
 						name="modelId"
-						class="w-full rounded-lg border-2 border-gray-200 bg-gray-100 p-2"
+						class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
 						bind:value={modelId}
 					>
 						{#each models.filter((model) => !model.unlisted) as model}
@@ -530,37 +538,48 @@
 			</label>
 
 			<label>
-				<div class="mb-1 font-semibold">User start messages</div>
-				<div class="grid gap-1.5 text-sm md:grid-cols-2">
+				<div class="mb-1 font-semibold flex justify-between">
+					<span class="m-1 ml-0 flex items-center gap-1.5 whitespace-nowrap text-sm">
+						Prompt messages
+
+						<HoverTooltip
+							label="Prompt messages that will be associated with this record. These can be the most relevant inquiries you'd like to infer when analyzing the patient record."
+						>
+							<CarbonHelpFilled
+								class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
+							/>
+						</HoverTooltip>
+					</span></div>
+				<div class="grid gap-1.5 text-sm md:grid-cols-2 mb-10">
 					<input
 						name="exampleInput1"
-						placeholder="Start Message 1"
+						placeholder="What is the ideal treatment plan?"
 						bind:value={inputMessage1}
-						class="w-full rounded-lg border-2 border-gray-200 bg-gray-100 p-2"
+						class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
 					/>
 					<input
 						name="exampleInput2"
-						placeholder="Start Message 2"
+						placeholder="What is the diagnosis?"
 						bind:value={inputMessage2}
-						class="w-full rounded-lg border-2 border-gray-200 bg-gray-100 p-2"
+						class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
 					/>
 
 					<input
 						name="exampleInput3"
 						placeholder="Start Message 3"
 						bind:value={inputMessage3}
-						class="w-full rounded-lg border-2 border-gray-200 bg-gray-100 p-2"
+						class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
 					/>
 					<input
 						name="exampleInput4"
 						placeholder="Start Message 4"
 						bind:value={inputMessage4}
-						class="w-full rounded-lg border-2 border-gray-200 bg-gray-100 p-2"
+						class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
 					/>
 				</div>
 				<p class="text-xs text-red-500">{getError("inputMessage1", form)}</p>
 			</label>
-			{#if $page.data.user?.isEarlyAccess && selectedModel?.tools}
+			<!-- {#if $page.data.user?.isEarlyAccess && selectedModel?.tools}
 				<div>
 					<span class="text-smd font-semibold"
 						>Tools
@@ -574,8 +593,8 @@
 					</p>
 				</div>
 				<AssistantToolPicker bind:toolIds={tools} />
-			{/if}
-			{#if $page.data.enableAssistantsRAG}
+			{/if} -->
+			<!-- {#if $page.data.enableAssistantsRAG}
 				<div class="flex flex-col flex-nowrap pb-4">
 					<span class="text-smd mt-2 font-semibold"
 						>Internet access
@@ -676,7 +695,7 @@
 						<p class="text-xs text-red-500">{getError("ragLinkList", form)}</p>
 					{/if}
 				</div>
-			{/if}
+			{/if} -->
 		</div>
 
 		<div class="relative col-span-1 flex h-full flex-col">
@@ -718,7 +737,7 @@
 				<textarea
 					name="preprompt"
 					class="min-h-[8lh] flex-1 rounded-lg border-2 border-gray-200 bg-transparent p-2 text-sm"
-					placeholder="You'll act as..."
+					placeholder="Additional medical notes"
 					bind:value={systemPrompt}
 				/>
 				{#if modelId}
@@ -737,7 +756,7 @@
 			</div>
 			<div class="absolute bottom-6 flex w-full justify-end gap-2 md:right-0 md:w-fit">
 				<a
-					href={assistant ? `${base}/settings/assistants/${assistant?._id}` : `${base}/settings`}
+					href={assistant ? `${base}/ehr/${assistant?._id}` : `${base}/ehr`}
 					class="flex items-center justify-center rounded-full bg-gray-200 px-5 py-2 font-semibold text-gray-600"
 				>
 					Cancel

@@ -13,7 +13,7 @@
 	import type { EHR } from "$lib/types/EHR";
 	import EhrDetails from "$lib/components/EHRDetails.svelte";
 
-	export let models: Model[];
+	// export let models: Model[];
 	export let data: PageData;
 
 	export let assistant = data.assistant;
@@ -38,7 +38,6 @@
 </script>
 
 <EhrDetails
-	{models}
 	{assistant}
 	on:message={(ev) => {
 		if ($page.data.loginRequired) {
