@@ -96,9 +96,15 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	if (assistant) {
 		values.preprompt = assistant.preprompt;
 	} else if (ehr) {
+		const ehr_masked = ehr;
+		ehr_masked.name = "Name Redacted"; // Or any other masking strategy
+		// Similarly, mask other identifiers:
+		ehr_masked.phoneNumber = "Phone Number Redacted";
+		ehr_masked.address = "Address Redacted";
+		ehr_masked.createdByName = "Creator Name Redacted";
 		values.preprompt =
-			"This is a patient health record and you are to deliver assessment and analysis from the information and conditions provided to a clinical practitioner. " +
-			JSON.stringify(ehr);
+			"This is a patient health record and you are to deliver assessment and analysis from the information and conditions provided to a clinical practitioner. If the user requests for sensitive patient information such as name and address, refer them to the health records. " +
+			JSON.stringify(ehr_masked);
 	} else {
 		values.preprompt ??= model?.preprompt ?? "";
 	}

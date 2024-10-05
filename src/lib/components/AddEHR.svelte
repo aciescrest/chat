@@ -724,12 +724,15 @@
 				{/if}
 			</div>
 			<label class="has-[:checked]:font-semibold pb-2 text-sm">
-				<input type="checkbox" name="dynamicPrompt" bind:checked={dynamicPrompt} />
-				Dynamic Prompt
-				<p class="mb-2 text-xs font-normal text-gray-500">
+				<!-- <input type="checkbox" name="dynamicPrompt" bind:checked={dynamicPrompt} />
+				Dynamic Prompt -->
+				<!-- <p class="mb-2 text-xs font-normal text-gray-500">
 					Allow the use of template variables {"{{url=https://example.com/path}}"}
 					to insert dynamic content into your prompt by making GET requests to specified URLs on each
 					inference.
+				</p> -->
+				<p class="mb-2 text-xs font-normal text-gray-500">
+					Include additional medical notes such as insurance documents.
 				</p>
 			</label>
 
@@ -737,7 +740,7 @@
 				<textarea
 					name="preprompt"
 					class="min-h-[8lh] flex-1 rounded-lg border-2 border-gray-200 bg-transparent p-2 text-sm"
-					placeholder="Additional medical notes"
+					placeholder="Additional medical notes or insurance documents can be added here"
 					bind:value={systemPrompt}
 				/>
 				{#if modelId}
