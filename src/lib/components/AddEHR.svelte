@@ -268,7 +268,7 @@
 				<input
 					name="name"
 					class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
-					placeholder="Assistant Name"
+					placeholder="Patient Name"
 					value={assistant?.name ?? ""}
 				/>
 				<p class="text-xs text-red-500">{getError("name", form)}</p>
@@ -724,15 +724,15 @@
 				{/if}
 			</div>
 			<label class="has-[:checked]:font-semibold pb-2 text-sm">
-				<!-- <input type="checkbox" name="dynamicPrompt" bind:checked={dynamicPrompt} />
-				Dynamic Prompt -->
+				<input type="checkbox" name="dynamicPrompt" bind:checked={dynamicPrompt} />
+				Dynamic Prompt
 				<!-- <p class="mb-2 text-xs font-normal text-gray-500">
 					Allow the use of template variables {"{{url=https://example.com/path}}"}
 					to insert dynamic content into your prompt by making GET requests to specified URLs on each
 					inference.
 				</p> -->
 				<p class="mb-2 text-xs font-normal text-gray-500">
-					Include additional medical notes such as insurance documents.
+					Include additional medical notes such as insurance
 				</p>
 			</label>
 
