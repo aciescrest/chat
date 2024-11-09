@@ -88,5 +88,30 @@ export async function fetchPaystackCustomer(identifier: string): Promise<Paystac
 		console.error(`Error fetching Paystack customer ${identifier}:`, errorMessage);
 		throw new Error(errorMessage); // Re-throw the error for the calling function to handle
 	}
-	/* eslint-enable @typescript-eslint/no-explicit-any */
 }
+
+/**
+ * Checks if a Paystack customer exists by email.
+ * @param email The customer's email address.
+ * @returns True if the customer exists, false otherwise.
+ */
+export async function paystackCustomerExists(email: string): Promise<boolean> {
+	if (!email) {
+		throw new Error("Email is required to check for customer existence.");
+	}
+
+	try {
+		const response = await fetchPaystackCustomer(email);
+		// Paystack returns status true even if customer doesn't exist, but data is null
+		return response.status && response.data !== null && Object.keys(response.data).length > 0;
+	} catch (error: any) {
+		if (error.message.includes("404")) {
+			// Paystack returns 404 when customer isn't found.
+			return false;
+		}
+		console.error(`Error checking Paystack customer existence: ${error.message}`);
+		throw error; // Re-throw the error for other issues.
+	}
+}
+
+/* eslint-enable @typescript-eslint/no-explicit-any */

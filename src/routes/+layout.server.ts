@@ -11,6 +11,7 @@ import type { ConvSidebar } from "$lib/types/ConvSidebar";
 import { toolFromConfigs } from "$lib/server/tools";
 import { MetricsServer } from "$lib/server/metrics";
 import type { ToolFront, ToolInputFile } from "$lib/types/Tool";
+import { createPaystackCustomer, paystackCustomerExists } from "$lib/server/customer";
 
 export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 	depends(UrlDependency.ConversationList);
@@ -151,6 +152,38 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 			}))
 		);
 
+	let customerEmail = locals?.user?.email;
+
+	if (!customerEmail) {
+		customerEmail = locals?.user?._id + "@email.com";
+	}
+
+	const paystackCustomerReg = customerEmail ? await paystackCustomerExists(customerEmail) : false;
+
+	if (!paystackCustomerReg && locals?.user?._id) {
+		const customerNames = locals?.user?.name ? locals?.user?.name.split(/\s+/) : ["J", "Doe"];
+		try {
+			const newCustomer = await createPaystackCustomer({
+				email: customerEmail,
+				first_name: customerNames[0],
+				last_name: customerNames[1],
+				// phone: "+2348012345678",
+				// metadata: JSON.stringify({ source: 'website signup' }),
+			});
+			if (newCustomer) {
+				// update existing user if any
+				await collections.users.updateOne(
+					{ _id: locals?.user?._id },
+					{ $set: { customerCode: newCustomer.data.customer_code } }
+				);
+			}
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (error: any) {
+			// Should ideally be a custom error type if you create one
+			console.error("Error in example:", error.message);
+		}
+	}
+
 	return {
 		conversations: conversations.map((conv) => {
 			if (settings?.hideEmojiOnSidebar) {
@@ -280,5 +313,6 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 		loginRequired,
 		loginEnabled: requiresUser,
 		guestMode: requiresUser && messagesBeforeLogin > 0,
+		paystackCustomerExists: paystackCustomerReg,
 	};
 };
