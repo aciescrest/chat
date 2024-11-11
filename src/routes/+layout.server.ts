@@ -11,7 +11,12 @@ import type { ConvSidebar } from "$lib/types/ConvSidebar";
 import { toolFromConfigs } from "$lib/server/tools";
 import { MetricsServer } from "$lib/server/metrics";
 import type { ToolFront, ToolInputFile } from "$lib/types/Tool";
-import { createPaystackCustomer, paystackCustomerExists } from "$lib/server/customer";
+import {
+	createPaystackCustomer,
+	createPaystackPlan,
+	paystackCustomerExists,
+	subscribeCustomerToPlan,
+} from "$lib/server/customer";
 
 export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 	depends(UrlDependency.ConversationList);
@@ -152,15 +157,43 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 			}))
 		);
 
-	let customerEmail = locals?.user?.email;
+	const appConfigs = await collections.appConfigs
+		.find({})
+		.toArray()
+		.then((configs) =>
+			configs.map((config) => ({
+				...config,
+				is_archived: false,
+			}))
+		);
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 
-	if (!customerEmail) {
-		customerEmail = locals?.user?._id + "@email.com";
+	if (appConfigs.length === 0) {
+		try {
+			const response = await createPaystackPlan({
+				name: "EHR Management & Healthcare Administration Application",
+				interval: "monthly",
+				amount: 500000,
+			});
+			if (response.data) {
+				await collections.appConfigs.insertOne(response.data);
+			}
+		} catch (error: any) {
+			// Should ideally be a custom error type if you create one
+			console.error("Error in example:", error.message);
+		}
 	}
+	/* eslint-disable @typescript-eslint/no-explicit-any */
+
+	const paystackPlan = appConfigs.find(
+		(a) => a.name === "EHR Management & Healthcare Administration Application"
+	);
+
+	const customerEmail = locals?.user?.email;
 
 	const paystackCustomerReg = customerEmail ? await paystackCustomerExists(customerEmail) : false;
 
-	if (!paystackCustomerReg && locals?.user?._id) {
+	if (!locals?.user?.customerCode) {
 		const customerNames = locals?.user?.name ? locals?.user?.name.split(/\s+/) : ["J", "Doe"];
 		try {
 			const newCustomer = await createPaystackCustomer({
@@ -170,6 +203,8 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 				// phone: "+2348012345678",
 				// metadata: JSON.stringify({ source: 'website signup' }),
 			});
+
+			await subscribeCustomerToPlan(locals?.user?.email, paystackPlan?.plan_code);
 			if (newCustomer) {
 				// update existing user if any
 				await collections.users.updateOne(

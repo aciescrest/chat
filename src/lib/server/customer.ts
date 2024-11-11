@@ -5,7 +5,7 @@ const SECRET_PAYSTACK_KEY = process.env.SECRET_PAYSTACK_KEY; // Replace with you
 const PAYSTACK_API_URL = "https://api.paystack.co";
 
 interface CustomerData {
-	email: string;
+	email?: string;
 	first_name?: string;
 	last_name?: string;
 	phone?: string;
@@ -17,6 +17,17 @@ interface PaystackResponse {
 	message: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	data: any; // Use a more specific type for the data if possible
+}
+
+interface PlanData {
+	name: string;
+	amount: number; // in kobo (e.g., 10000 for ₦100)
+	interval: "hourly" | "daily" | "weekly" | "monthly" | "annually"; // Subscription interval
+	description?: string;
+	send_invoices?: boolean;
+	send_sms?: boolean;
+	currency?: string; // Defaults to NGN
+	invoice_limit?: number; // Number of invoices to generate
 }
 
 /**
@@ -111,6 +122,80 @@ export async function paystackCustomerExists(email: string): Promise<boolean> {
 		}
 		console.error(`Error checking Paystack customer existence: ${error.message}`);
 		throw error; // Re-throw the error for other issues.
+	}
+}
+
+/**
+ * Subscribes a customer to a Paystack plan.
+ *
+ * @param customerCodeOrEmail The customer's code or email address.
+ * @param planCode The Paystack plan code.
+ * @returns The Paystack API response.
+ * @throws Error if the subscription fails.
+ */
+export async function subscribeCustomerToPlan(
+	customerCodeOrEmail: string | undefined,
+	planCode: string | undefined
+): Promise<PaystackResponse> {
+	if (!customerCodeOrEmail || !planCode) {
+		throw new Error("Customer identifier and plan code are required for subscription.");
+	}
+
+	try {
+		const response = await axios.post<PaystackResponse>(
+			`${PAYSTACK_API_URL}/subscription`,
+			{
+				customer: customerCodeOrEmail,
+				plan: planCode,
+				start_date: new Date().toISOString(),
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${SECRET_PAYSTACK_KEY}`,
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		return response.data;
+	} catch (error: any) {
+		const errorMessage = error.response
+			? `Paystack Subscription Error: ${error.response.status} - ${JSON.stringify(
+					error.response.data
+			  )}`
+			: `Paystack Subscription Error: ${error.message}`;
+		console.error("Error subscribing customer:", errorMessage);
+		throw new Error(errorMessage);
+	}
+}
+
+/**
+ * Creates a new subscription plan on Paystack.
+ *
+ * @param planData The plan data object.
+ * @returns The Paystack API response.
+ * @throws Error if plan creation fails.
+ */
+export async function createPaystackPlan(planData: PlanData): Promise<PaystackResponse> {
+	if (!planData || !planData.name || !planData.amount || !planData.interval) {
+		throw new Error("Name, amount, and interval are required to create a Paystack plan.");
+	}
+
+	try {
+		const response = await axios.post<PaystackResponse>(`${PAYSTACK_API_URL}/plan`, planData, {
+			headers: {
+				Authorization: `Bearer ${SECRET_PAYSTACK_KEY}`,
+				"Content-Type": "application/json",
+			},
+		});
+		return response.data;
+	} catch (error: any) {
+		const errorMessage = error.response
+			? `Paystack Plan Creation Error: ${error.response.status} - ${JSON.stringify(
+					error.response.data
+			  )}`
+			: `Paystack Plan Creation Error: ${error.message}`;
+		console.error("Error creating Paystack plan:", errorMessage);
+		throw new Error(errorMessage);
 	}
 }
 

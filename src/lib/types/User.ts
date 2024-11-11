@@ -12,4 +12,5 @@ export interface User extends Timestamps {
 	isAdmin?: boolean;
 	isEarlyAccess?: boolean;
 	customerCode?: string;
+	planCode?: string;
 }

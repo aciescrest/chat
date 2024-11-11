@@ -8,7 +8,7 @@
 import { error } from "@sveltejs/kit";
 // import type { Filter } from "mongodb";
 // import { SECRET_PAYSTACK_KEY } from "$env/static/private";
-// import { createPaystackCustomer, fetchPaystackCustomer, paystackCustomerExists } from "$lib/server/customer";
+import { fetchPaystackCustomer } from "$lib/server/customer";
 
 export const load = async ({ locals }) => {
 	if (!locals.user) {
@@ -18,14 +18,14 @@ export const load = async ({ locals }) => {
 	// const customerNames = locals?.user?.name ? locals?.user?.name.split(/\s+/) : ["J", "Doe"];
 	// console.log(customerNames);
 
-	// let customerEmail = locals.user.email;
+	let customerEmail = locals.user.email;
 
-	// if (!customerEmail) {
-	// 	customerEmail = locals.user._id + "@email.com";
-	// }
+	if (!customerEmail) {
+		customerEmail = locals.user._id + "@email.com";
+	}
 
-	// const fetchedCustomer = await fetchPaystackCustomer(customerEmail);
-	// console.log("Fetched newly created customer:", fetchedCustomer);
+	const fetchedCustomer = await fetchPaystackCustomer(customerEmail);
+	console.log("Fetched newly created customer:", fetchedCustomer.data);
 
 	// try {
 	// 	const newCustomer = await createPaystackCustomer({

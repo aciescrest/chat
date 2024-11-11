@@ -20,6 +20,7 @@ import { building } from "$app/environment";
 import type { TokenCache } from "$lib/types/TokenCache";
 import { onExit } from "./exitHandler";
 import type { EHR } from "$lib/types/EHR";
+import type { AppConfigs } from "$lib/types/AppConfigs";
 
 export const CONVERSATION_STATS_COLLECTION = "conversations.stats";
 
@@ -90,6 +91,7 @@ export class Database {
 		const tokenCaches = db.collection<TokenCache>("tokens");
 		const tools = db.collection<CommunityToolDB>("tools");
 		const EHR = db.collection<EHR>("EHR");
+		const appConfigs = db.collection<AppConfigs>("appConfigs");
 
 		return {
 			conversations,
@@ -109,6 +111,7 @@ export class Database {
 			tokenCaches,
 			tools,
 			EHR,
+			appConfigs,
 		};
 	}
 
@@ -133,6 +136,7 @@ export class Database {
 			tokenCaches,
 			tools,
 			EHR,
+			appConfigs,
 		} = this.getCollections();
 
 		conversations
@@ -242,6 +246,7 @@ export class Database {
 		EHR.createIndex({ last24HoursUseCount: -1, useCount: -1, _id: 1 }).catch((e) =>
 			logger.error(e)
 		);
+		appConfigs.createIndex({ plan_code: 1 }, { unique: true }).catch((e) => logger.error(e));
 	}
 }
 
