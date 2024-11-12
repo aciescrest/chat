@@ -8,6 +8,10 @@
 	import CarbonArrowUpRight from "~icons/carbon/ArrowUpRight";
 	import CarbonAdd from "~icons/carbon/add";
 	import CarbonTextLongParagraph from "~icons/carbon/text-long-paragraph";
+	import CarbonWallet from "~icons/carbon/wallet";
+	import CarbonBuilding from "~icons/carbon/building";
+
+
 
 	import UserIcon from "~icons/carbon/user";
 	import type { LayoutData } from "../$types";
@@ -52,27 +56,22 @@
 		<a
 			href="{base}/account/payments"
 			class="group flex h-10 flex-none items-center gap-2 pl-3 pr-2 text-sm text-gray-500 hover:bg-gray-100 md:rounded-xl"
-			><CarbonArrowUpRight class="mr-1.5 shrink-0 text-xs " />
+			><CarbonWallet class="mr-1.5 shrink-0 text-xs " />
 			<div class="truncate">Payments and Transactions</div>
 		</a>
 		<a
-			href="{base}/assistants"
+			href="{base}/account/organization"
 			class="group flex h-10 flex-none items-center gap-2 pl-3 pr-2 text-sm text-gray-500 hover:bg-gray-100 md:rounded-xl"
-			><CarbonArrowUpRight class="mr-1.5 shrink-0 text-xs " />
+			><UserIcon class="mr-1.5 shrink-0 text-xs " />
 			<div class="truncate">User Information</div>
 		</a>
 		<a
-			href="{base}/assistants"
+			href="{base}/account/organization"
 			class="group flex h-10 flex-none items-center gap-2 pl-3 pr-2 text-sm text-gray-500 hover:bg-gray-100 md:rounded-xl"
-			><CarbonArrowUpRight class="mr-1.5 shrink-0 text-xs " />
+			><CarbonBuilding class="mr-1.5 shrink-0 text-xs " />
 			<div class="truncate">Organization Information and Affiliation</div>
 		</a>
-		<a
-			href="{base}/assistants"
-			class="group flex h-10 flex-none items-center gap-2 pl-3 pr-2 text-sm text-gray-500 hover:bg-gray-100 md:rounded-xl"
-			><CarbonArrowUpRight class="mr-1.5 shrink-0 text-xs " />
-			<div class="truncate">Payments and Transactions</div>
-		</a>
+		
 		<!-- <h3 class="pb-3 pl-3 pt-2 text-[.8rem] text-gray-800 sm:pl-1">Models</h3>
 
 		{#each data.models.filter((el) => !el.unlisted) as model}

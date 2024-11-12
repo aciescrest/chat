@@ -69,3 +69,5 @@ Fetch customer and subscription info
 Make payment
 
 Change paystack key to live
+
+Remove standard / fixed models from EHR management

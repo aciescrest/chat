@@ -14,6 +14,7 @@ import type { ToolFront, ToolInputFile } from "$lib/types/Tool";
 import {
 	createPaystackCustomer,
 	createPaystackPlan,
+	fetchPaystackCustomer,
 	paystackCustomerExists,
 	subscribeCustomerToPlan,
 } from "$lib/server/customer";
@@ -193,7 +194,7 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 
 	const paystackCustomerReg = customerEmail ? await paystackCustomerExists(customerEmail) : false;
 
-	if (!locals?.user?.customerCode) {
+	if (!locals?.user?.customerCode && locals?.user?._id) {
 		const customerNames = locals?.user?.name ? locals?.user?.name.split(/\s+/) : ["J", "Doe"];
 		try {
 			const newCustomer = await createPaystackCustomer({
@@ -219,6 +220,27 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 		}
 	}
 
+	let paymentPrompt = false;
+	/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+	if (locals?.user) {
+		const fetchedCustomer = await fetchPaystackCustomer(customerEmail!);
+
+		const subs = fetchedCustomer.data.subscriptions;
+		const paystackSubscription = subs.find((a: any) => a.amount === 500000);
+		const currentDate = new Date();
+		const nextPaystackPaymentDate = new Date(paystackSubscription.next_payment_date);
+
+		if (currentDate > nextPaystackPaymentDate) {
+			paymentPrompt = true;
+		} else if (nextPaystackPaymentDate > currentDate) {
+			paymentPrompt = false;
+		} else {
+			paymentPrompt = true;
+		}
+	}
+
+	/* eslint-disable @typescript-eslint/no-non-null-assertion */
 	return {
 		conversations: conversations.map((conv) => {
 			if (settings?.hideEmojiOnSidebar) {
@@ -349,5 +371,6 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 		loginEnabled: requiresUser,
 		guestMode: requiresUser && messagesBeforeLogin > 0,
 		paystackCustomerExists: paystackCustomerReg,
+		paymentPrompt,
 	};
 };

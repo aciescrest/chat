@@ -21,6 +21,7 @@
 	import DisclaimerModal from "$lib/components/DisclaimerModal.svelte";
 	import ExpandNavigation from "$lib/components/ExpandNavigation.svelte";
 	import { PUBLIC_APP_DISCLAIMER } from "$env/static/public";
+	import PaymentModal from "$lib/components/PaymentModal.svelte";
 
 	export let data;
 
@@ -207,6 +208,10 @@
 
 {#if !$settings.ethicsModalAccepted && $page.url.pathname !== `${base}/privacy` && PUBLIC_APP_DISCLAIMER === "1"}
 	<DisclaimerModal />
+{/if}
+
+{#if data.paymentPrompt}
+	<PaymentModal />
 {/if}
 
 <ExpandNavigation
