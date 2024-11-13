@@ -1,7 +1,7 @@
 import axios from "axios";
 import { error } from "@sveltejs/kit";
 
-const SECRET_PAYSTACK_KEY = process.env.SECRET_PAYSTACK_KEY; // Replace with your actual secret key
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY; // Replace with your actual secret key
 const PAYSTACK_API_URL = "https://api.paystack.co";
 
 interface CustomerData {
@@ -52,7 +52,7 @@ export async function createPaystackCustomer(
 			customerData,
 			{
 				headers: {
-					Authorization: `Bearer ${SECRET_PAYSTACK_KEY}`,
+					Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
 					"Content-Type": "application/json",
 				},
 			}
@@ -85,7 +85,7 @@ export async function fetchPaystackCustomer(identifier: string): Promise<Paystac
 			`${PAYSTACK_API_URL}/customer/${identifier}`,
 			{
 				headers: {
-					Authorization: `Bearer ${SECRET_PAYSTACK_KEY}`,
+					Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
 					"Content-Type": "application/json",
 				},
 			}
@@ -152,7 +152,7 @@ export async function subscribeCustomerToPlan(
 			},
 			{
 				headers: {
-					Authorization: `Bearer ${SECRET_PAYSTACK_KEY}`,
+					Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
 					"Content-Type": "application/json",
 				},
 			}
@@ -184,7 +184,7 @@ export async function createPaystackPlan(planData: PlanData): Promise<PaystackRe
 	try {
 		const response = await axios.post<PaystackResponse>(`${PAYSTACK_API_URL}/plan`, planData, {
 			headers: {
-				Authorization: `Bearer ${SECRET_PAYSTACK_KEY}`,
+				Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
 				"Content-Type": "application/json",
 			},
 		});
@@ -198,6 +198,69 @@ export async function createPaystackPlan(planData: PlanData): Promise<PaystackRe
 		console.error("Error creating Paystack plan:", errorMessage);
 		throw new Error(errorMessage);
 	}
+}
+
+export interface PaystackPaymentPageData {
+	email: string;
+	plan: string;
+	amount: number;
+	channels?: string[]; // Defaults to NGN
+	reference?: string; // Unique transaction reference (recommended)
+	callback_url?: string; // URL to redirect to after payment
+	metadata?: any; // Additional data to send to Paystack
+}
+
+/**
+ * Creates a Paystack payment page.
+ *
+ * @param paymentData The payment page data.
+ * @returns A URL to the Paystack payment page or throws an error.
+ */
+export async function createPaystackPaymentPage(
+	paymentData: PaystackPaymentPageData
+): Promise<string> {
+	if (!paymentData.email || !paymentData.plan) {
+		throw new Error("Email and plan are required to create a payment page.");
+	}
+
+	const requestData = {
+		email: paymentData.email,
+		plan: paymentData.plan,
+		amount: paymentData.amount,
+		channels: paymentData.channels || ["card", "bank", "mobile_money", "bank_transfer", "eft"],
+		reference: paymentData.reference || generateReference(), // Generate if not provided
+		callback_url: paymentData.callback_url, // Optional
+		metadata: paymentData.metadata, // Optional
+	};
+
+	try {
+		const response = await axios.post(`${PAYSTACK_API_URL}/transaction/initialize`, requestData, {
+			headers: {
+				Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (response.data.status && response.data.data && response.data.data.authorization_url) {
+			return response.data.data.authorization_url;
+		} else {
+			throw new Error(`Paystack payment page creation failed: ${response.data.message}`);
+		}
+	} catch (error: any) {
+		const errorMessage = error.response
+			? `Paystack Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`
+			: `Paystack Error: ${error.message}`;
+
+		console.error("Error creating Paystack payment page:", errorMessage);
+		throw new Error(errorMessage);
+	}
+}
+
+// Helper function to generate a unique reference (you can customize this)
+function generateReference(): string {
+	const timestamp = new Date().getTime().toString();
+	const randomString = Math.random().toString(36).substring(2, 15); // Generate random part
+	return `REF_${timestamp}_${randomString}`;
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

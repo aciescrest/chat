@@ -7,9 +7,10 @@
 	import { useSettingsStore } from "$lib/stores/settings";
 	import { cookiesAreEnabled } from "$lib/utils/cookiesAreEnabled";
 	import Logo from "./icons/Logo.svelte";
-	import CarbonWallet from "~icons/carbon/wallet";
 
 	const settings = useSettingsStore();
+
+	export let paystackPaymentUrl: string;
 </script>
 
 <Modal>
@@ -30,33 +31,25 @@
 		</p>
 
 		<div class="flex w-full flex-col items-center gap-2">
-			{#if $page.data.guestMode || !$page.data.loginEnabled}
-				<button
-					class="w-full justify-center rounded-full border-2 border-gray-300 bg-black px-5 py-2 text-lg font-semibold text-gray-100 transition-colors hover:bg-gray-900"
-					class:bg-white={$page.data.loginEnabled}
-					class:text-gray-800={$page.data.loginEnabled}
-					class:hover:bg-slate-100={$page.data.loginEnabled}
-					on:click|preventDefault|stopPropagation={() => {
-						if (!cookiesAreEnabled()) {
-							window.open(window.location.href, "_blank");
-						}
-
-						$settings.ethicsModalAccepted = true;
-					}}
-				>
-					Make Payment
-				</button>
-			{/if}
-			{#if $page.data.loginEnabled}
-				<form action="{base}/login" target="_parent" method="POST" class="w-full">
-					<button
-						type="submit"
-						class="flex w-full flex-wrap items-center justify-center whitespace-nowrap rounded-full border-2 border-black bg-black px-5 py-2 text-lg font-semibold text-gray-100 transition-colors hover:bg-gray-900"
-					>
-						Contact Support
-					</button>
-				</form>
-			{/if}
+			<button
+				class="w-full justify-center rounded-full border-2 border-gray-300 bg-black px-5 py-2 text-lg font-semibold text-gray-100 transition-colors hover:bg-gray-900"
+				class:bg-white={$page.data.loginEnabled}
+				class:text-gray-800={$page.data.loginEnabled}
+				class:hover:bg-slate-100={$page.data.loginEnabled}
+				on:click|preventDefault|stopPropagation={() => {
+					window.open(paystackPaymentUrl, "_blank");
+				}}
+			>
+				Make Payment
+			</button>
+			<button
+				type="submit"
+				class="flex w-full flex-wrap items-center justify-center whitespace-nowrap rounded-full border-2 border-black bg-black px-5 py-2 text-lg font-semibold text-gray-100 transition-colors hover:bg-gray-900"
+				on:click|preventDefault|stopPropagation={() => {
+					window.open("https://aciescrest.com/contact", "_blank");
+				}}
+				>Contact Support
+			</button>
 		</div>
 	</div>
 </Modal>

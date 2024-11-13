@@ -211,7 +211,9 @@
 {/if}
 
 {#if data.paymentPrompt}
-	<PaymentModal />
+	<PaymentModal
+	paystackPaymentUrl={data.paystackPaymentPageUrl}
+	 />
 {/if}
 
 <ExpandNavigation
