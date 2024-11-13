@@ -13,9 +13,12 @@ import { MetricsServer } from "$lib/server/metrics";
 import type { ToolFront, ToolInputFile } from "$lib/types/Tool";
 import {
 	createPaystackCustomer,
+	createPaystackPaymentPage,
 	createPaystackPlan,
+	fetchPaystackCustomer,
 	paystackCustomerExists,
 	subscribeCustomerToPlan,
+	type PaystackPaymentPageData,
 } from "$lib/server/customer";
 
 export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
@@ -157,15 +160,7 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 			}))
 		);
 
-	const appConfigs = await collections.appConfigs
-		.find({})
-		.toArray()
-		.then((configs) =>
-			configs.map((config) => ({
-				...config,
-				is_archived: false,
-			}))
-		);
+	const appConfigs = await collections.appConfigs.find({}).toArray();
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 
 	if (appConfigs.length === 0) {
@@ -193,7 +188,7 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 
 	const paystackCustomerReg = customerEmail ? await paystackCustomerExists(customerEmail) : false;
 
-	if (!locals?.user?.customerCode) {
+	if (!locals?.user?.customerCode && locals?.user?._id) {
 		const customerNames = locals?.user?.name ? locals?.user?.name.split(/\s+/) : ["J", "Doe"];
 		try {
 			const newCustomer = await createPaystackCustomer({
@@ -219,6 +214,52 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 		}
 	}
 
+	let paymentPrompt = false;
+	/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+	if (locals?.user) {
+		const fetchedCustomer = await fetchPaystackCustomer(customerEmail!);
+
+		const subs = fetchedCustomer.data.subscriptions;
+		const paystackSubscription = subs.find((a: any) => a.amount === 500000);
+		const currentDate = new Date();
+		const nextPaystackPaymentDate = new Date(paystackSubscription.next_payment_date);
+
+		if (currentDate > nextPaystackPaymentDate) {
+			paymentPrompt = true;
+		} else if (nextPaystackPaymentDate > currentDate) {
+			paymentPrompt = false;
+		} else {
+			paymentPrompt = true;
+		}
+	}
+
+	let paystackPaymentPageUrl = "";
+
+	/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+
+	if (paymentPrompt) {
+		const paymentData: PaystackPaymentPageData = {
+			email: locals?.user?.email!,
+			plan: paystackPlan?.plan_code!,
+			amount: 200000,
+			callback_url: "https://care.aciescrest.com/",
+		};
+
+		await createPaystackPaymentPage(paymentData)
+			.then((paymentPageUrl: string) => {
+				// Redirect the user to the payment page URL
+				paystackPaymentPageUrl = paymentPageUrl; // Or open in a new window/tab
+			})
+			.catch((error) => {
+				// Handle the error (e.g., display an error message to the user)
+
+				throw error(401, "There was an error generating payment details.");
+			});
+	}
+	/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+
+	/* eslint-disable @typescript-eslint/no-non-null-assertion */
 	return {
 		conversations: conversations.map((conv) => {
 			if (settings?.hideEmojiOnSidebar) {
@@ -349,5 +390,7 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 		loginEnabled: requiresUser,
 		guestMode: requiresUser && messagesBeforeLogin > 0,
 		paystackCustomerExists: paystackCustomerReg,
+		paymentPrompt,
+		paystackPaymentPageUrl,
 	};
 };
