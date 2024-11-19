@@ -19,11 +19,11 @@
 
 	export let data: PageData;
 
-	let customerEmail = data?.user?.email;
+	// let customerEmail = data?.user?.email;
 
-	if (!customerEmail) {
-		customerEmail = data?.user?.id + "@email.com";
-	}
+	// if (!customerEmail) {
+	// 	customerEmail = data?.user?.id + "@email.com";
+	// }
 
 	export let customer = data.customer;
 
@@ -82,7 +82,7 @@
 		</div> -->
 	</div>
 
-	<div class="flex items-start justify-between text-xl font-semibold text-gray-800">
+	<!-- <div class="flex items-start justify-between text-xl font-semibold text-gray-800">
 		<h2>Transactions</h2>
-	</div>
+	</div> -->
 </div>

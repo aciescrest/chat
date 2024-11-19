@@ -134,14 +134,14 @@
 			>
 		</a>
 	{/if} -->
-	{#if $page.data.enableAssistants}
+	<!-- {#if $page.data.enableAssistants}
 		<a
 			href="{base}/assistants"
 			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 		>
 			Assistants
 		</a>
-	{/if}
+	{/if} -->
 	<!-- {#if $page.data.enableCommunityTools}
 		<a
 			href="{base}/tools"
@@ -155,12 +155,12 @@
 		</a>
 	{/if} -->
 
-	<a
+	<!-- <a
 		href="{base}/settings"
 		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 	>
 		Settings
-	</a>
+	</a> -->
 	<a
 		href="{base}/account"
 		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"

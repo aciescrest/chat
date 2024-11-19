@@ -18,7 +18,7 @@
 
 <div class="flex w-full flex-col gap-5">
 	<div class="flex items-start justify-between text-xl font-semibold text-gray-800">
-		<h2>Payments</h2>
+		<h2>Institution</h2>
 	</div>
 
 	<label>
@@ -33,7 +33,7 @@
 	</label>
 
 	<label>
-		<div class="mb-1 font-semibold">Patient Demographics</div>
+		<div class="mb-1 font-semibold">Attributes</div>
 		<div
 			class="mt-2 grid gap-1.5 rounded-lg border border-blue-500/20 bg-blue-500/5 px-2 py-0.5 pb-4 pt-4 text-sm md:grid-cols-2"
 		>

@@ -22,5 +22,10 @@ export const load = (async ({ locals, parent }) => {
 			...el,
 			reported: reportsByUser.includes(el._id),
 		})),
+		user: {
+			name: locals?.user?.name,
+			email: locals?.user?.email,
+			customerCode: locals?.user?.customerCode,
+		},
 	};
 }) satisfies LayoutServerLoad;

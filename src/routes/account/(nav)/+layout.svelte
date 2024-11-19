@@ -16,7 +16,7 @@
 	import UserIcon from "~icons/carbon/user";
 	import type { LayoutData } from "../$types";
 
-	export let data: LayoutData;
+	// export let data: LayoutData;
 
 	let previousPage: string = base;
 	let assistantsSection: HTMLHeadingElement;
@@ -28,7 +28,7 @@
 	});
 
 	afterNavigate(({ from }) => {
-		if (!from?.url.pathname.includes("settings")) {
+		if (!from?.url.pathname.includes("account")) {
 			previousPage = from?.url.toString() || previousPage;
 		}
 	});
@@ -59,18 +59,12 @@
 			><CarbonWallet class="mr-1.5 shrink-0 text-xs " />
 			<div class="truncate">Payments and Transactions</div>
 		</a>
-		<a
-			href="{base}/account/organization"
-			class="group flex h-10 flex-none items-center gap-2 pl-3 pr-2 text-sm text-gray-500 hover:bg-gray-100 md:rounded-xl"
-			><UserIcon class="mr-1.5 shrink-0 text-xs " />
-			<div class="truncate">User Information</div>
-		</a>
-		<a
+		<!-- <a
 			href="{base}/account/organization"
 			class="group flex h-10 flex-none items-center gap-2 pl-3 pr-2 text-sm text-gray-500 hover:bg-gray-100 md:rounded-xl"
 			><CarbonBuilding class="mr-1.5 shrink-0 text-xs " />
-			<div class="truncate">Organization Information and Affiliation</div>
-		</a>
+			<div class="truncate">Organization Information</div>
+		</a> -->
 		
 		<!-- <h3 class="pb-3 pl-3 pt-2 text-[.8rem] text-gray-800 sm:pl-1">Models</h3>
 
@@ -97,55 +91,9 @@
 			</a>
 		{/each} -->
 		<!-- if its huggingchat, the number of assistants owned by the user must be non-zero to show the UI -->
-		{#if data.enableAssistants}
-			<h3 bind:this={assistantsSection} class="pl-3 pt-5 text-[.8rem] text-gray-800 sm:pl-1">
-				Assistants
-			</h3>
-			<!-- My Assistants -->
-			<h4 class="py-2 pl-5 text-[.7rem] text-gray-600 sm:pl-1">My Assistants</h4>
-
-			{#each data.assistants.filter((assistant) => assistant.createdByMe) as assistant}
-				<a
-					href="{base}/settings/assistants/{assistant._id.toString()}"
-					class="group flex h-10 flex-none items-center gap-2 pl-2 pr-2 text-sm text-gray-500 hover:bg-gray-100 md:rounded-xl
-					{assistant._id.toString() === $page.params.assistantId ? '!bg-gray-100 !text-gray-800' : ''}"
-				>
-					{#if assistant.avatar}
-						<img
-							src="{base}/settings/assistants/{assistant._id.toString()}/avatar.jpg?hash={assistant.avatar}"
-							alt="Avatar"
-							class="h-6 w-6 rounded-full"
-						/>
-					{:else}
-						<div
-							class="size-6 flex items-center justify-center rounded-full bg-gray-300 font-bold uppercase text-gray-500"
-						>
-							{assistant.name[0]}
-						</div>
-					{/if}
-					<div class="truncate text-gray-900">{assistant.name}</div>
-					{#if assistant._id.toString() === $settings.activeModel}
-						<div
-							class="ml-auto rounded-lg bg-black px-2 py-1.5 text-xs font-semibold leading-none text-white"
-						>
-							Active
-						</div>
-					{/if}
-				</a>
-			{/each}
-			{#if !data.loginEnabled || (data.loginEnabled && !!data.user)}
-				<a
-					href="{base}/settings/assistants/new"
-					class="group flex h-10 flex-none items-center gap-2 pl-3 pr-2 text-sm text-gray-500 hover:bg-gray-100 md:rounded-xl
-				{$page.url.pathname === `${base}/settings/assistants/new` ? '!bg-gray-100 !text-gray-800' : ''}"
-				>
-					<CarbonAdd />
-					<div class="truncate">Create new assistant</div>
-				</a>
-			{/if}
-
+	
 			<!-- Other Assistants -->
-			<h4 class="pl-3 pt-3 text-[.7rem] text-gray-600 sm:pl-1">Additional Settings</h4>
+			<h4 class="pl-3 pt-3 text-[.7rem] text-gray-600 sm:pl-1">Additional Information</h4>
 
 			<!-- {#each data.assistants.filter((assistant) => !assistant.createdByMe) as assistant}
 				<a
@@ -177,12 +125,12 @@
 				</a>
 			{/each} -->
 			<a
-				href="{base}/assistants"
+				href="{base}/ehr"
 				class="group flex h-10 flex-none items-center gap-2 pl-3 pr-2 text-sm text-gray-500 hover:bg-gray-100 md:rounded-xl"
 				><CarbonArrowUpRight class="mr-1.5 shrink-0 text-xs " />
-				<div class="truncate">Browse Assistants</div>
+				<div class="truncate">Browse Patient Reports</div>
 			</a>
-		{/if}
+		<!-- {/if} -->
 
 		<div class="my-2 mt-auto w-full border-b border-gray-200" />
 		<a
