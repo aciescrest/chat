@@ -26,9 +26,8 @@
 	// }
 
 	export let customer = data.customer;
-
 	const subs = customer.data.subscriptions;
-	const paystackSubscription = subs.find((a: any) => a.amount === 500000);
+	const paystackSubscription = data.paystackSubscription;
 	// export let subscription = data.paystackSubscription;
 </script>
 

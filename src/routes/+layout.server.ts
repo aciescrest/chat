@@ -163,12 +163,19 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 	const appConfigs = await collections.appConfigs.find({}).toArray();
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 
+	const PAYSTACK_SUBSCRIPTION_NAME = process.env.PAYSTACK_SUBSCRIPTION_NAME;
+	const PAYSTACK_SUBSCRIPTION_AMOUNT = process.env.PAYSTACK_SUBSCRIPTION_AMOUNT;
+	const PAYSTACK_SUBSCRIPTION_CURRENCY = process.env.PAYSTACK_SUBSCRIPTION_CURRENCY;
+
+	/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 	if (appConfigs.length === 0) {
 		try {
 			const response = await createPaystackPlan({
-				name: "EHR Management & Healthcare Administration Application",
+				name: PAYSTACK_SUBSCRIPTION_NAME!,
 				interval: "monthly",
-				amount: 500000,
+				amount: +PAYSTACK_SUBSCRIPTION_AMOUNT!,
+				currency: PAYSTACK_SUBSCRIPTION_CURRENCY,
 			});
 			if (response.data) {
 				await collections.appConfigs.insertOne(response.data);
@@ -178,11 +185,12 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 			console.error("Error in example:", error.message);
 		}
 	}
+
+	/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 
-	const paystackPlan = appConfigs.find(
-		(a) => a.name === "EHR Management & Healthcare Administration Application"
-	);
+	const paystackPlan = appConfigs.find((a) => a.name === PAYSTACK_SUBSCRIPTION_NAME);
 
 	const customerEmail = locals?.user?.email;
 
@@ -242,7 +250,7 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 		const paymentData: PaystackPaymentPageData = {
 			email: locals?.user?.email!,
 			plan: paystackPlan?.plan_code!,
-			amount: 200000,
+			amount: 500000,
 			callback_url: "https://care.aciescrest.com/",
 		};
 

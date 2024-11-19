@@ -24,12 +24,14 @@ export const load = async ({ locals }) => {
 		customerEmail = locals.user._id + "@email.com";
 	}
 
+	const PAYSTACK_SUBSCRIPTION_NAME = process.env.PAYSTACK_SUBSCRIPTION_NAME;
+
 	const fetchedCustomer = await fetchPaystackCustomer(customerEmail);
 
 	const subs = fetchedCustomer.data.subscriptions;
 	const paystackSubscription = subs.find(
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(a: any) => a.amount === 500000
+		(a: any) => a.name === PAYSTACK_SUBSCRIPTION_NAME
 	);
 
 	// try {
