@@ -31,7 +31,6 @@ export const load = async ({ locals }) => {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(a: any) => a.amount === 500000
 	);
-	// console.log(paystackSubscription);
 
 	// try {
 	// 	const newCustomer = await createPaystackCustomer({

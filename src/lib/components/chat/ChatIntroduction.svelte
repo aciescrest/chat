@@ -11,7 +11,7 @@
 	import { useSettingsStore } from "$lib/stores/settings";
 	import JSON5 from "json5";
 
-	export let currentModel: Model;
+	// export let currentModel: Model;
 	export let models: Model[];
 
 	const settings = useSettingsStore();
@@ -34,7 +34,7 @@
 				<div
 					class="ml-3 flex h-6 items-center rounded-lg border border-gray-100 bg-gray-50 px-2 text-base text-gray-400 dark:border-gray-700/60 dark:bg-gray-800"
 				>
-					v{envPublic.PUBLIC_VERSION}
+					{envPublic.PUBLIC_VERSION}
 				</div>
 			</div>
 			<p class="text-base text-gray-600 dark:text-gray-400">
@@ -53,7 +53,7 @@
 				>
 			</AnnouncementBanner>
 		{/each}
-		<div class="overflow-hidden rounded-xl border dark:border-gray-800">
+		<!-- <div class="overflow-hidden rounded-xl border dark:border-gray-800">
 			<div class="flex p-3">
 				<div>
 					<div class="text-sm text-gray-600 dark:text-gray-400">Current Model</div>
@@ -77,7 +77,7 @@
 				>
 			</div>
 			<ModelCardMetadata variant="dark" model={currentModel} />
-		</div>
+		</div> -->
 	</div>
 	{#if currentModelMetadata.promptExamples}
 		<div class="lg:col-span-3 lg:mt-6">

@@ -10,7 +10,7 @@
 	let previousPage: string = base;
 
 	afterNavigate(({ from }) => {
-		if (!from?.url.pathname.includes("settings")) {
+		if (!from?.url.pathname.includes("account")) {
 			previousPage = from?.url.toString() || previousPage;
 		}
 	});
