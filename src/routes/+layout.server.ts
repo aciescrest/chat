@@ -159,16 +159,23 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 				isLocked: true,
 			}))
 		);
-
+	/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 	const appConfigs = await collections.appConfigs.find({}).toArray();
 	/* eslint-disable @typescript-eslint/no-explicit-any */
+
+	const PAYSTACK_SUBSCRIPTION_NAME = process.env.PAYSTACK_SUBSCRIPTION_NAME;
+	const PAYSTACK_SUBSCRIPTION_AMOUNT = process.env.PAYSTACK_SUBSCRIPTION_AMOUNT;
+	const PAYSTACK_SUBSCRIPTION_CURRENCY = process.env.PAYSTACK_SUBSCRIPTION_CURRENCY;
+
+	/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 	if (appConfigs.length === 0) {
 		try {
 			const response = await createPaystackPlan({
-				name: "EHR Management & Healthcare Administration Application",
+				name: PAYSTACK_SUBSCRIPTION_NAME!,
 				interval: "monthly",
-				amount: 500000,
+				amount: +PAYSTACK_SUBSCRIPTION_AMOUNT!,
+				currency: PAYSTACK_SUBSCRIPTION_CURRENCY,
 			});
 			if (response.data) {
 				await collections.appConfigs.insertOne(response.data);
@@ -178,28 +185,51 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 			console.error("Error in example:", error.message);
 		}
 	}
+
+	/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 
-	const paystackPlan = appConfigs.find(
-		(a) => a.name === "EHR Management & Healthcare Administration Application"
-	);
+	const paystackPlan = appConfigs.find((a) => a.name === PAYSTACK_SUBSCRIPTION_NAME);
 
 	const customerEmail = locals?.user?.email;
 
 	const paystackCustomerReg = customerEmail ? await paystackCustomerExists(customerEmail) : false;
 
-	if (!locals?.user?.customerCode && locals?.user?._id) {
+	let paymentPrompt = false;
+
+	let paystackPaymentPageUrl = "";
+
+	let paymentDefault = false;
+
+	if (!paystackCustomerReg && customerEmail) {
 		const customerNames = locals?.user?.name ? locals?.user?.name.split(/\s+/) : ["J", "Doe"];
 		try {
 			const newCustomer = await createPaystackCustomer({
 				email: customerEmail,
 				first_name: customerNames[0],
 				last_name: customerNames[1],
-				// phone: "+2348012345678",
+				phone: "+2348012345678",
 				// metadata: JSON.stringify({ source: 'website signup' }),
 			});
 
-			await subscribeCustomerToPlan(locals?.user?.email, paystackPlan?.plan_code);
+			await createPaystackPaymentPage({
+				email: customerEmail,
+				plan: paystackPlan?.plan_code!,
+				amount: +PAYSTACK_SUBSCRIPTION_AMOUNT!,
+			})
+				.then((paymentPageUrl: string) => {
+					// Redirect the user to the payment page URL
+					paymentPrompt = true;
+					paystackPaymentPageUrl = paymentPageUrl; // Or open in a new window/tab
+				})
+				.catch((error) => {
+					// Handle the error (e.g., display an error message to the user)
+
+					throw error(401, "There was an error generating payment details.");
+				});
+
+			await subscribeCustomerToPlan(customerEmail, paystackPlan?.plan_code);
 			if (newCustomer) {
 				// update existing user if any
 				await collections.users.updateOne(
@@ -214,35 +244,37 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 		}
 	}
 
-	let paymentPrompt = false;
 	/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-	if (locals?.user) {
+	if (locals?.user && paystackCustomerReg) {
 		const fetchedCustomer = await fetchPaystackCustomer(customerEmail!);
 
 		const subs = fetchedCustomer.data.subscriptions;
-		const paystackSubscription = subs.find((a: any) => a.amount === 500000);
-		const currentDate = new Date();
-		const nextPaystackPaymentDate = new Date(paystackSubscription.next_payment_date);
+		const paystackSubscription = subs.find((a: any) => a.amount === +PAYSTACK_SUBSCRIPTION_AMOUNT!);
 
-		if (currentDate > nextPaystackPaymentDate) {
-			paymentPrompt = true;
-		} else if (nextPaystackPaymentDate > currentDate) {
-			paymentPrompt = false;
-		} else {
-			paymentPrompt = true;
+		if (paystackSubscription) {
+			const currentDate = new Date();
+			const nextPaystackPaymentDate = new Date(paystackSubscription.next_payment_date);
+
+			if (currentDate > nextPaystackPaymentDate) {
+				paymentDefault = true;
+			} else if (nextPaystackPaymentDate > currentDate) {
+				paymentDefault = false;
+			} else {
+				paymentDefault = true;
+			}
+		} else if (!paystackSubscription) {
+			await subscribeCustomerToPlan(locals?.user?.email, paystackPlan?.plan_code);
 		}
 	}
 
-	let paystackPaymentPageUrl = "";
-
 	/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 
-	if (paymentPrompt) {
+	if (paymentDefault) {
 		const paymentData: PaystackPaymentPageData = {
 			email: locals?.user?.email!,
 			plan: paystackPlan?.plan_code!,
-			amount: 200000,
+			amount: 500000,
 			callback_url: "https://care.aciescrest.com/",
 		};
 

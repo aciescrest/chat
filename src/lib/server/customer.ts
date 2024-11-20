@@ -1,9 +1,10 @@
 import axios from "axios";
 import { error } from "@sveltejs/kit";
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY; // Replace with your actual secret key
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+const PAYSTACK_SUBSCRIPTION_AMOUNT = process.env.PAYSTACK_SUBSCRIPTION_AMOUNT;
 const PAYSTACK_API_URL = "https://api.paystack.co";
-
+/* eslint-enable @typescript-eslint/no-non-null-assertion */
 interface CustomerData {
 	email?: string;
 	first_name?: string;
@@ -134,6 +135,8 @@ export async function paystackCustomerExists(email: string): Promise<boolean> {
  * @returns The Paystack API response.
  * @throws Error if the subscription fails.
  */
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion */
 export async function subscribeCustomerToPlan(
 	customerCodeOrEmail: string | undefined,
 	planCode: string | undefined
@@ -157,6 +160,11 @@ export async function subscribeCustomerToPlan(
 				},
 			}
 		);
+		await createPaystackPaymentPage({
+			email: customerCodeOrEmail,
+			plan: planCode,
+			amount: Number(PAYSTACK_SUBSCRIPTION_AMOUNT),
+		});
 		return response.data;
 	} catch (error: any) {
 		const errorMessage = error.response
@@ -168,6 +176,7 @@ export async function subscribeCustomerToPlan(
 		throw new Error(errorMessage);
 	}
 }
+/* eslint-enable @typescript-eslint/no-non-null-assertion */
 
 /**
  * Creates a new subscription plan on Paystack.
@@ -264,3 +273,4 @@ function generateReference(): string {
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
+/* eslint-enable @typescript-eslint/no-non-null-assertion */

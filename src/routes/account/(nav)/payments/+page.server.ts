@@ -9,7 +9,7 @@ import { error } from "@sveltejs/kit";
 // import type { Filter } from "mongodb";
 // import { SECRET_PAYSTACK_KEY } from "$env/static/private";
 import { fetchPaystackCustomer } from "$lib/server/customer";
-
+/* eslint-enable @typescript-eslint/no-non-null-assertion */
 export const load = async ({ locals }) => {
 	if (!locals.user) {
 		throw error(401, "User not authenticated.");
@@ -24,12 +24,14 @@ export const load = async ({ locals }) => {
 		customerEmail = locals.user._id + "@email.com";
 	}
 
+	const PAYSTACK_SUBSCRIPTION_AMOUNT = process.env.PAYSTACK_SUBSCRIPTION_AMOUNT;
+
 	const fetchedCustomer = await fetchPaystackCustomer(customerEmail);
 
 	const subs = fetchedCustomer.data.subscriptions;
 	const paystackSubscription = subs.find(
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(a: any) => a.amount === 500000
+		(a: any) => a.amount === Number(PAYSTACK_SUBSCRIPTION_AMOUNT)
 	);
 
 	// try {
@@ -55,3 +57,4 @@ export const load = async ({ locals }) => {
 		paystackSubscription,
 	};
 };
+/* eslint-enable @typescript-eslint/no-non-null-assertion */
