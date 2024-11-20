@@ -217,6 +217,7 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 				email: customerEmail,
 				plan: paystackPlan?.plan_code!,
 				amount: +PAYSTACK_SUBSCRIPTION_AMOUNT!,
+				callback_url: "https://care.aciescrest.com/",
 			})
 				.then((paymentPageUrl: string) => {
 					// Redirect the user to the payment page URL

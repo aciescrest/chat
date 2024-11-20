@@ -206,14 +206,18 @@
 	{/if}
 </svelte:head>
 
-{#if !$settings.ethicsModalAccepted && $page.url.pathname !== `${base}/privacy` && PUBLIC_APP_DISCLAIMER === "1"}
+<!-- {#if !$settings.ethicsModalAccepted && $page.url.pathname !== `${base}/privacy` && PUBLIC_APP_DISCLAIMER === "1"}
 	<DisclaimerModal />
-{/if}
+{/if} -->
 
 {#if data.paymentPrompt}
 	<PaymentModal
 	paystackPaymentUrl={data.paystackPaymentPageUrl}
 	 />
+{/if}
+
+{#if !data.user && PUBLIC_APP_DISCLAIMER === "1"}
+	<DisclaimerModal />
 {/if}
 
 <ExpandNavigation
