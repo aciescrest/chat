@@ -24,7 +24,8 @@
 			{envPublic.PUBLIC_APP_DESCRIPTION}
 		</p>
 
-		<p class="text-sm text-gray-500">
+		<p class="text-balance rounded-xl border bg-white/80 p-2 text-base text-gray-800">
+			<strong class="font-semibold">Sign In to Access the Platform.</strong> <br />
 			{envPublic.PUBLIC_APP_DISCLAIMER_MESSAGE}
 		</p>
 
@@ -66,6 +67,18 @@
 					</button>
 				</form>
 			{/if}
+			<button
+				class="w-full justify-center rounded-full border-2 border-gray-300 bg-black px-5 py-2 text-lg font-semibold text-gray-100 transition-colors hover:bg-gray-900"
+				class:bg-white={$page.data.loginEnabled}
+				class:text-gray-800={$page.data.loginEnabled}
+				class:hover:bg-slate-100={$page.data.loginEnabled}
+				on:click|preventDefault|stopPropagation={() => {
+						window.open("https://aciescrest.com", "_blank");
+					
+				}}
+			>
+				View Demo Video
+			</button>
 		</div>
 	</div>
 </Modal>
