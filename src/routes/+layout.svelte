@@ -216,7 +216,7 @@
 	 />
 {/if}
 
-{#if !data.user && PUBLIC_APP_DISCLAIMER === "1"}
+{#if !data.user}
 	<DisclaimerModal />
 {/if}
 
