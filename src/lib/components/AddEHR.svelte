@@ -36,14 +36,11 @@
 
 	export let form: ActionData;
 	export let assistant: EHRFront | undefined = undefined;
-	export let models: Model[] = [];
 
 	let files: FileList | null = null;
 	const settings = useSettingsStore();
-	let modelId = "";
 	let systemPrompt = assistant?.preprompt ?? "";
 	let dynamicPrompt = assistant?.dynamicPrompt ?? false;
-	let showModelSettings = Object.values(assistant?.generateSettings ?? {}).some((v) => !!v);
 
 	let medicalNotes: { note: string; visitDate: string | Date }[] = assistant?.medicalNotes || [];
 	let newNote = "";
@@ -55,7 +52,6 @@
 		const module = await import("browser-image-resizer");
 		compress = module.readAndCompressImage;
 
-		modelId = findCurrentModel(models, assistant ? assistant.modelId : $settings.activeModel).id;
 	});
 
 	let inputMessage1 = assistant?.exampleInputs[0] ?? "What is the ideal treatment plan?";
@@ -106,7 +102,6 @@
 	const regex = /{{\s?url=(.+?)\s?}}/g;
 
 	$: templateVariables = [...systemPrompt.matchAll(regex)].map((match) => match[1]);
-	$: selectedModel = models.find((m) => m.id === modelId);
 
 	function addMedicalNote() {
 		if (newNote) {
@@ -404,138 +399,7 @@
 				</div>
 			</label>
 
-			<label>
-				<div class="mb-1 flex justify-between font-semibold">
-					<span class="m-1 ml-0 flex items-center gap-1.5 whitespace-nowrap text-sm">
-						Model
-
-						<HoverTooltip
-							label="The AI model that will be used when analyzing the patient record. Choose this according to preference."
-						>
-							<CarbonHelpFilled
-								class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
-							/>
-						</HoverTooltip>
-					</span>
-				</div>
-				<div class="flex gap-2">
-					<select
-						name="modelId"
-						class="w-full rounded-lg border-2 border-gray-200 bg-transparent p-2"
-						bind:value={modelId}
-					>
-						{#each models.filter((model) => !model.unlisted) as model}
-							<option value={model.id}>{model.displayName}</option>
-						{/each}
-						<p class="text-xs text-red-500">{getError("modelId", form)}</p>
-					</select>
-					<button
-						type="button"
-						class="flex aspect-square items-center gap-2 whitespace-nowrap rounded-lg border px-3 {showModelSettings
-							? 'border-blue-500/20 bg-blue-50 text-blue-600'
-							: ''}"
-						on:click={() => (showModelSettings = !showModelSettings)}
-						><CarbonSettingsAdjust class="text-xs" /></button
-					>
-				</div>
-				<div
-					class="mt-2 rounded-lg border border-blue-500/20 bg-blue-500/5 px-2 py-0.5"
-					class:hidden={!showModelSettings}
-				>
-					<p class="text-xs text-red-500">{getError("inputMessage1", form)}</p>
-					<div class="my-2 grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:grid-rows-2">
-						<label for="temperature" class="flex justify-between">
-							<span class="m-1 ml-0 flex items-center gap-1.5 whitespace-nowrap text-sm">
-								Temperature
-
-								<HoverTooltip
-									label="Temperature: Controls creativity, higher values allow more variety."
-								>
-									<CarbonHelpFilled
-										class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
-									/>
-								</HoverTooltip>
-							</span>
-							<input
-								type="number"
-								name="temperature"
-								min="0.1"
-								max="2"
-								step="0.1"
-								class="w-20 rounded-lg border-2 border-gray-200 bg-gray-100 px-2 py-1"
-								placeholder={selectedModel?.parameters?.temperature?.toString() ?? "1"}
-								value={assistant?.generateSettings?.temperature ?? ""}
-							/>
-						</label>
-						<label for="top_p" class="flex justify-between">
-							<span class="m-1 ml-0 flex items-center gap-1.5 whitespace-nowrap text-sm">
-								Top P
-								<HoverTooltip
-									label="Top P: Sets word choice boundaries, lower values tighten focus."
-								>
-									<CarbonHelpFilled
-										class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
-									/>
-								</HoverTooltip>
-							</span>
-
-							<input
-								type="number"
-								name="top_p"
-								class="w-20 rounded-lg border-2 border-gray-200 bg-gray-100 px-2 py-1"
-								min="0.05"
-								max="1"
-								step="0.05"
-								placeholder={selectedModel?.parameters?.top_p?.toString() ?? "1"}
-								value={assistant?.generateSettings?.top_p ?? ""}
-							/>
-						</label>
-						<label for="repetition_penalty" class="flex justify-between">
-							<span class="m-1 ml-0 flex items-center gap-1.5 whitespace-nowrap text-sm">
-								Repetition penalty
-								<HoverTooltip
-									label="Repetition penalty: Prevents reuse, higher values decrease repetition."
-								>
-									<CarbonHelpFilled
-										class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
-									/>
-								</HoverTooltip>
-							</span>
-							<input
-								type="number"
-								name="repetition_penalty"
-								min="0.1"
-								max="2"
-								step="0.1"
-								class="w-20 rounded-lg border-2 border-gray-200 bg-gray-100 px-2 py-1"
-								placeholder={selectedModel?.parameters?.repetition_penalty?.toString() ?? "1.0"}
-								value={assistant?.generateSettings?.repetition_penalty ?? ""}
-							/>
-						</label>
-						<label for="top_k" class="flex justify-between">
-							<span class="m-1 ml-0 flex items-center gap-1.5 whitespace-nowrap text-sm">
-								Top K <HoverTooltip
-									label="Top K: Restricts word options, lower values for predictability."
-								>
-									<CarbonHelpFilled
-										class="text-xxs inline text-gray-500 group-hover/tooltip:text-blue-600"
-									/>
-								</HoverTooltip>
-							</span>
-							<input
-								type="number"
-								name="top_k"
-								min="5"
-								max="100"
-								step="5"
-								class="w-20 rounded-lg border-2 border-gray-200 bg-gray-100 px-2 py-1"
-								placeholder={selectedModel?.parameters?.top_k?.toString() ?? "50"}
-								value={assistant?.generateSettings?.top_k ?? ""}
-							/>
-						</label>
-					</div>
-				</div>
-			</label>
+			
 
 			<label>
 				<div class="mb-1 font-semibold flex justify-between">
@@ -743,17 +607,6 @@
 					placeholder="Additional medical notes or insurance documents can be added here"
 					bind:value={systemPrompt}
 				/>
-				{#if modelId}
-					{@const model = models.find((_model) => _model.id === modelId)}
-					{#if model?.tokenizer && systemPrompt}
-						<TokensCounter
-							classNames="absolute bottom-4 right-4"
-							prompt={systemPrompt}
-							modelTokenizer={model.tokenizer}
-							truncate={model?.parameters?.truncate}
-						/>
-					{/if}
-				{/if}
 
 				<p class="text-xs text-red-500">{getError("preprompt", form)}</p>
 			</div>
