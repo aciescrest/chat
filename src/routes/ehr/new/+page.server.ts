@@ -12,9 +12,8 @@ import { usageLimits } from "$lib/server/usageLimits";
 import { generateSearchTokens } from "$lib/utils/searchTokens";
 import { toolFromConfigs } from "$lib/server/tools";
 
-const newAsssistantSchema = z.object({
+const newEHRSchema = z.object({
 	name: z.string().min(1),
-	modelId: z.string().min(1),
 	preprompt: z.string().min(1),
 	description: z.string().optional(),
 	exampleInput1: z.string().optional(),
@@ -26,20 +25,7 @@ const newAsssistantSchema = z.object({
 	ragDomainList: z.preprocess(parseStringToList, z.string().array()),
 	ragAllowAll: z.preprocess((v) => v === "true", z.boolean()),
 	dynamicPrompt: z.preprocess((v) => v === "on", z.boolean()),
-	temperature: z
-		.union([z.literal(""), z.coerce.number().min(0.1).max(2)])
-		.transform((v) => (v === "" ? undefined : v)),
-	top_p: z
-		.union([z.literal(""), z.coerce.number().min(0.05).max(1)])
-		.transform((v) => (v === "" ? undefined : v)),
 
-	repetition_penalty: z
-		.union([z.literal(""), z.coerce.number().min(0.1).max(2)])
-		.transform((v) => (v === "" ? undefined : v)),
-
-	top_k: z
-		.union([z.literal(""), z.coerce.number().min(5).max(100)])
-		.transform((v) => (v === "" ? undefined : v)),
 	tools: z
 		.string()
 		.optional()
@@ -131,7 +117,7 @@ export const actions: Actions = {
 	default: async ({ request, locals }) => {
 		const formData = Object.fromEntries(await request.formData());
 
-		const parse = await newAsssistantSchema.safeParseAsync(formData);
+		const parse = await newEHRSchema.safeParseAsync(formData);
 
 		if (!parse.success) {
 			// Loop through the errors array and create a custom errors array
@@ -210,12 +196,6 @@ export const actions: Actions = {
 			dynamicPrompt: parse.data.dynamicPrompt,
 			searchTokens: generateSearchTokens(parse.data.name),
 			last24HoursCount: 0,
-			generateSettings: {
-				temperature: parse.data.temperature,
-				top_p: parse.data.top_p,
-				repetition_penalty: parse.data.repetition_penalty,
-				top_k: parse.data.top_k,
-			},
 
 			age: parse.data.age,
 			gender: parse.data.gender,

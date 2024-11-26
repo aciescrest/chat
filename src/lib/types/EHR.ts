@@ -19,7 +19,6 @@ export interface EHR extends Timestamps {
 	medicalNotes?: { note: string; visitDate: string | Date }[];
 
 	description?: string;
-	modelId: string;
 	exampleInputs: string[];
 	preprompt: string;
 	userCount?: number;
@@ -28,12 +27,6 @@ export interface EHR extends Timestamps {
 		allowAllDomains: boolean;
 		allowedDomains: string[];
 		allowedLinks: string[];
-	};
-	generateSettings?: {
-		temperature?: number;
-		top_p?: number;
-		repetition_penalty?: number;
-		top_k?: number;
 	};
 	dynamicPrompt?: boolean;
 	searchTokens: string[];

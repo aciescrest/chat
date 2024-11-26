@@ -29,7 +29,6 @@
 		| "name"
 		| "rag"
 		| "dynamicPrompt"
-		| "modelId"
 		| "createdByName"
 		| "exampleInputs"
 		| "_id"
