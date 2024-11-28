@@ -153,9 +153,39 @@
 
 <svelte:head>
 	<title>{envPublic.PUBLIC_APP_NAME}</title>
-	<meta name="description" content="The first open source alternative to ChatGPT. 💪" />
+	<meta name="description" content={envPublic.PUBLIC_APP_META_DESCRIPTION} />
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:site" content="@huggingface" />
+	<meta name="twitter:site" content="@aciescrest" />
+
+	<script type="application/ld+json">
+		{
+		  "@context" : "https://schema.org",
+		  "@type" : "WebSite",
+		  "name" : "Acies Crest Care",
+		  "alternateName" : "AC Care",
+		  "url" : "https://care.aciescrest.com/"
+		}
+	</script>
+
+	<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["WebApplication", "MobileApplication"],
+      "name": "Acies Crest Care",
+      "operatingSystem": ["ANDROID", "WINDOWS", "IOS", "OSX", "LINUX"],
+      "applicationCategory": "HealthApplication",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 4.6,
+        "ratingCount": 5
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": 25.00,
+        "priceCurrency": "USD"
+      }
+    }
+	</script>
 
 	<!-- use those meta tags everywhere except on the share assistant page -->
 	<!-- feel free to refacto if there's a better way -->
@@ -211,9 +241,7 @@
 {/if} -->
 
 {#if data.paymentPrompt}
-	<PaymentModal
-	paystackPaymentUrl={data.paystackPaymentPageUrl}
-	 />
+	<PaymentModal paystackPaymentUrl={data.paystackPaymentPageUrl} />
 {/if}
 
 {#if !data.user}
@@ -229,7 +257,7 @@
 />
 
 <div
-	class="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] overflow-hidden text-smd {!isNavCollapsed
+	class="text-smd grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] overflow-hidden {!isNavCollapsed
 		? 'md:grid-cols-[280px,1fr]'
 		: 'md:grid-cols-[0px,1fr]'} transition-[300ms] [transition-property:grid-template-columns] dark:text-gray-300 md:grid-rows-[1fr]"
 >
@@ -244,7 +272,7 @@
 		/>
 	</MobileNav>
 	<nav
-		class=" grid max-h-screen grid-cols-1 grid-rows-[auto,1fr,auto] overflow-hidden *:w-[280px] max-md:hidden"
+		class=" *:w-[280px] grid max-h-screen grid-cols-1 grid-rows-[auto,1fr,auto] overflow-hidden max-md:hidden"
 	>
 		<NavMenu
 			conversations={data.conversations}
