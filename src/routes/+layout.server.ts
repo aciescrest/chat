@@ -169,7 +169,9 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 
 	/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-	if (appConfigs.length === 0) {
+	const paystackPlan = appConfigs.find((a) => a.name === PAYSTACK_SUBSCRIPTION_NAME);
+
+	if (!paystackPlan) {
 		try {
 			const response = await createPaystackPlan({
 				name: PAYSTACK_SUBSCRIPTION_NAME!,
@@ -189,8 +191,6 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 	/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */
-
-	const paystackPlan = appConfigs.find((a) => a.name === PAYSTACK_SUBSCRIPTION_NAME);
 
 	const customerEmail = locals?.user?.email;
 

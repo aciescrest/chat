@@ -73,7 +73,7 @@
 				class:text-gray-800={$page.data.loginEnabled}
 				class:hover:bg-slate-100={$page.data.loginEnabled}
 				on:click|preventDefault|stopPropagation={() => {
-						window.open("https://aciescrest.com", "_blank");
+						window.open(envPublic.PUBLIC_APP_DEMO_VIDEO_LINK, "_blank");
 					
 				}}
 			>
