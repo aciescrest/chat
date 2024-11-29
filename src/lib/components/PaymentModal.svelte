@@ -50,6 +50,18 @@
 				}}
 				>Contact Support
 			</button>
+			<button
+				class="w-full justify-center rounded-full border-2 border-gray-300 bg-black px-5 py-2 text-lg font-semibold text-gray-100 transition-colors hover:bg-gray-900"
+				class:bg-white={$page.data.loginEnabled}
+				class:text-gray-800={$page.data.loginEnabled}
+				class:hover:bg-slate-100={$page.data.loginEnabled}
+				on:click|preventDefault|stopPropagation={() => {
+						window.open(envPublic.PUBLIC_APP_DEMO_VIDEO_LINK, "_blank");
+					
+				}}
+			>
+				View Demo Video
+			</button>
 		</div>
 	</div>
 </Modal>
