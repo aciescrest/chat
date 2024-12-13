@@ -13,4 +13,5 @@ export interface User extends Timestamps {
 	isEarlyAccess?: boolean;
 	customerCode?: string;
 	planCode?: string;
+	freeTrialEndDate?: string;
 }

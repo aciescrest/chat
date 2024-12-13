@@ -219,6 +219,13 @@
 	];
 
 	$: isFileUploadEnabled = activeMimeTypes.length > 0;
+
+	 // Function to handle cancel action
+	 function handleCancel() {
+        // Placeholder for cancel logic, e.g., closing the banner or showing a confirmation dialog
+        console.log('Cancel action would be handled here');
+    }
+
 </script>
 
 <svelte:window
@@ -236,6 +243,13 @@
 			}}
 		/>
 	{/if}
+
+	<div class="flex w-full flex-1 border-none bg-transparent max-w-lg mx-auto pt-2">
+		{#if $page.data.isFreeTrialActive}
+			<p class="text-base text-gray-600 dark:text-gray-400">Your free trial ends on <strong>{new Date($page.data.freeTrialEndDate).toDateString()}</strong>. Contact the support team for any inquiry.</p>
+
+		{/if}
+	</div>
 	<div
 		class="scrollbar-custom mr-1 h-full overflow-y-auto"
 		use:snapScrollToBottom={messages.length ? [...messages] : false}

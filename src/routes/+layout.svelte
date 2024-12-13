@@ -25,6 +25,10 @@
 
 	export let data;
 
+    // $: if (data.paystackPaymentPageUrl && data.paymentPrompt) {
+    //     window.location.href = data.paystackPaymentPageUrl;
+    // }
+   
 	let isNavOpen = false;
 	let isNavCollapsed = false;
 
@@ -177,7 +181,7 @@
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": 4.6,
-        "ratingCount": 5
+        "ratingCount": 50
       },
       "offers": {
         "@type": "Offer",

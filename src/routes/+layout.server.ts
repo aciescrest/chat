@@ -171,6 +171,29 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 
 	const paystackPlan = appConfigs.find((a) => a.name === PAYSTACK_SUBSCRIPTION_NAME);
 
+	// Free Trial Logic
+	const FREE_TRIAL_DAYS = 7; // Set the duration of your free trial (in days)
+	let isFreeTrialActive = false;
+	let freeTrialEndDate: Date | null = null;
+
+	if (locals?.user) {
+		// Check if the user has a freeTrialEndDate property
+		if (locals.user.freeTrialEndDate) {
+			freeTrialEndDate = new Date(locals.user.freeTrialEndDate);
+			isFreeTrialActive = freeTrialEndDate > new Date();
+		} else {
+			// If not, set it to now + FREE_TRIAL_DAYS
+			freeTrialEndDate = new Date();
+			freeTrialEndDate.setDate(freeTrialEndDate.getDate() + FREE_TRIAL_DAYS);
+			isFreeTrialActive = true;
+
+			await collections.users.updateOne(
+				{ _id: locals.user._id },
+				{ $set: { freeTrialEndDate: freeTrialEndDate.toISOString() } }
+			);
+		}
+	}
+
 	if (!paystackPlan) {
 		try {
 			const response = await createPaystackPlan({
@@ -194,34 +217,97 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 
 	const customerEmail = locals?.user?.email;
 
-	const paystackCustomerReg = customerEmail ? await paystackCustomerExists(customerEmail) : false;
-
 	let paymentPrompt = false;
 
 	let paystackPaymentPageUrl = "";
 
 	let paymentDefault = false;
 
-	if (!paystackCustomerReg && customerEmail) {
-		const customerNames = locals?.user?.name ? locals?.user?.name.split(/\s+/) : ["J", "Doe"];
-		try {
-			const newCustomer = await createPaystackCustomer({
-				email: customerEmail,
-				first_name: customerNames[0],
-				last_name: customerNames[1],
-				phone: "+2348012345678",
-				// metadata: JSON.stringify({ source: 'website signup' }),
-			});
+	if (locals?.user && !isFreeTrialActive) {
+		const paystackCustomerReg = customerEmail ? await paystackCustomerExists(customerEmail) : false;
 
-			await createPaystackPaymentPage({
-				email: customerEmail,
+		if (!paystackCustomerReg && customerEmail) {
+			const customerNames = locals?.user?.name ? locals?.user?.name.split(/\s+/) : ["J", "Doe"];
+			try {
+				const newCustomer = await createPaystackCustomer({
+					email: customerEmail,
+					first_name: customerNames[0],
+					last_name: customerNames[1],
+					phone: "+2348012345678",
+					// metadata: JSON.stringify({ source: 'website signup' }),
+				});
+
+				await createPaystackPaymentPage({
+					email: customerEmail,
+					plan: paystackPlan?.plan_code!,
+					amount: +PAYSTACK_SUBSCRIPTION_AMOUNT!,
+					callback_url: "https://care.aciescrest.com/",
+				})
+					.then((paymentPageUrl: string) => {
+						// Redirect the user to the payment page URL
+						paymentPrompt = true;
+						paystackPaymentPageUrl = paymentPageUrl; // Or open in a new window/tab
+					})
+					.catch((error) => {
+						// Handle the error (e.g., display an error message to the user)
+
+						throw error(401, "There was an error generating payment details.");
+					});
+
+				await subscribeCustomerToPlan(customerEmail, paystackPlan?.plan_code);
+				if (newCustomer) {
+					// update existing user if any
+					await collections.users.updateOne(
+						{ _id: locals?.user?._id },
+						{ $set: { customerCode: newCustomer.data.customer_code } }
+					);
+				}
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			} catch (error: any) {
+				// Should ideally be a custom error type if you create one
+				console.error("Error in example:", error.message);
+			}
+		}
+
+		/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+		if (paystackCustomerReg) {
+			const fetchedCustomer = await fetchPaystackCustomer(customerEmail!);
+
+			const subs = fetchedCustomer.data.subscriptions;
+			const paystackSubscription = subs.find(
+				(a: any) => a.amount === +PAYSTACK_SUBSCRIPTION_AMOUNT!
+			);
+
+			if (paystackSubscription) {
+				const currentDate = new Date();
+				const nextPaystackPaymentDate = new Date(paystackSubscription.next_payment_date);
+
+				if (currentDate > nextPaystackPaymentDate) {
+					paymentDefault = true;
+				} else if (nextPaystackPaymentDate > currentDate) {
+					paymentDefault = false;
+				} else {
+					paymentDefault = true;
+				}
+			} else if (!paystackSubscription) {
+				await subscribeCustomerToPlan(locals?.user?.email, paystackPlan?.plan_code);
+			}
+		}
+
+		/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+
+		if (paymentDefault) {
+			const paymentData: PaystackPaymentPageData = {
+				email: locals?.user?.email!,
 				plan: paystackPlan?.plan_code!,
-				amount: +PAYSTACK_SUBSCRIPTION_AMOUNT!,
+				amount: 500000,
 				callback_url: "https://care.aciescrest.com/",
-			})
+			};
+
+			await createPaystackPaymentPage(paymentData)
 				.then((paymentPageUrl: string) => {
 					// Redirect the user to the payment page URL
-					paymentPrompt = true;
 					paystackPaymentPageUrl = paymentPageUrl; // Or open in a new window/tab
 				})
 				.catch((error) => {
@@ -229,70 +315,12 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 
 					throw error(401, "There was an error generating payment details.");
 				});
-
-			await subscribeCustomerToPlan(customerEmail, paystackPlan?.plan_code);
-			if (newCustomer) {
-				// update existing user if any
-				await collections.users.updateOne(
-					{ _id: locals?.user?._id },
-					{ $set: { customerCode: newCustomer.data.customer_code } }
-				);
-			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		} catch (error: any) {
-			// Should ideally be a custom error type if you create one
-			console.error("Error in example:", error.message);
 		}
+		/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+
+		/* eslint-disable @typescript-eslint/no-non-null-assertion */
 	}
 
-	/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
-	if (locals?.user && paystackCustomerReg) {
-		const fetchedCustomer = await fetchPaystackCustomer(customerEmail!);
-
-		const subs = fetchedCustomer.data.subscriptions;
-		const paystackSubscription = subs.find((a: any) => a.amount === +PAYSTACK_SUBSCRIPTION_AMOUNT!);
-
-		if (paystackSubscription) {
-			const currentDate = new Date();
-			const nextPaystackPaymentDate = new Date(paystackSubscription.next_payment_date);
-
-			if (currentDate > nextPaystackPaymentDate) {
-				paymentDefault = true;
-			} else if (nextPaystackPaymentDate > currentDate) {
-				paymentDefault = false;
-			} else {
-				paymentDefault = true;
-			}
-		} else if (!paystackSubscription) {
-			await subscribeCustomerToPlan(locals?.user?.email, paystackPlan?.plan_code);
-		}
-	}
-
-	/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-
-	if (paymentDefault) {
-		const paymentData: PaystackPaymentPageData = {
-			email: locals?.user?.email!,
-			plan: paystackPlan?.plan_code!,
-			amount: 500000,
-			callback_url: "https://care.aciescrest.com/",
-		};
-
-		await createPaystackPaymentPage(paymentData)
-			.then((paymentPageUrl: string) => {
-				// Redirect the user to the payment page URL
-				paystackPaymentPageUrl = paymentPageUrl; // Or open in a new window/tab
-			})
-			.catch((error) => {
-				// Handle the error (e.g., display an error message to the user)
-
-				throw error(401, "There was an error generating payment details.");
-			});
-	}
-	/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-
-	/* eslint-disable @typescript-eslint/no-non-null-assertion */
 	return {
 		conversations: conversations.map((conv) => {
 			if (settings?.hideEmojiOnSidebar) {
@@ -422,8 +450,10 @@ export const load: LayoutServerLoad = async ({ locals, depends, request }) => {
 		loginRequired,
 		loginEnabled: requiresUser,
 		guestMode: requiresUser && messagesBeforeLogin > 0,
-		paystackCustomerExists: paystackCustomerReg,
+		paystackCustomerExists: customerEmail ? await paystackCustomerExists(customerEmail) : false,
 		paymentPrompt,
 		paystackPaymentPageUrl,
+		isFreeTrialActive, // Include free trial status in the return object
+		freeTrialEndDate: freeTrialEndDate?.toISOString() ?? null, // Include free trial end date
 	};
 };
